@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-palette="blue-hour" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blue Hour Design System · Styleguide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="tokens/tokens.css">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:var(--font-body);background:var(--color-bg);color:var(--color-text-hi);line-height:var(--leading-body);transition:background .3s,color .3s}
+  .wrap{max-width:1100px;margin:0 auto;padding:48px 24px 96px}
+
+  header{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;flex-wrap:wrap;margin-bottom:8px}
+  .eyebrow{font-family:var(--font-mono);font-size:var(--text-xs);letter-spacing:.18em;text-transform:uppercase;color:var(--color-aqua)}
+  h1{font-family:var(--font-display);font-size:clamp(30px,5vw,var(--text-3xl));font-weight:var(--weight-bold);letter-spacing:var(--tracking-display);line-height:var(--leading-tight);margin:10px 0 12px}
+  h1 .grad{background:var(--gradient-brand);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .lede{color:var(--color-text-mid);max-width:600px;font-size:var(--text-base)}
+
+  .toggle{display:flex;gap:4px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-full);padding:6px;box-shadow:var(--shadow-card)}
+  .toggle button{font-family:var(--font-body);font-size:13px;font-weight:var(--weight-semibold);border:none;background:transparent;color:var(--color-text-mid);padding:8px 16px;border-radius:var(--radius-full);cursor:pointer;transition:all var(--motion-base)}
+  .toggle button.active{background:var(--color-primary);color:var(--color-on-primary)}
+  .pal-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;width:100%}
+  .pal{display:flex;align-items:center;gap:8px;font-family:var(--font-body);font-size:12.5px;font-weight:var(--weight-semibold);padding:8px 14px;border-radius:var(--radius-full);border:1px solid var(--color-border);background:var(--color-surface);color:var(--color-text-mid);cursor:pointer;transition:all var(--motion-base)}
+  .pal .sw{width:11px;height:11px;border-radius:3px}
+  .pal.active{border-color:var(--color-primary);color:var(--color-text-hi);box-shadow:0 0 0 2px var(--tint-primary)}
+  .pal:focus-visible{outline:2px solid var(--color-accent);outline-offset:2px}
+  .toggle button:focus-visible,.btn:focus-visible,.swatch:focus-visible{outline:2px solid var(--color-aqua);outline-offset:2px}
+
+  section{margin-top:64px}
+  h2{font-family:var(--font-display);font-size:var(--text-lg);font-weight:var(--weight-semibold);display:flex;align-items:center;gap:12px}
+  h2 .num{font-family:var(--font-mono);font-size:var(--text-xs);color:var(--color-aqua);font-weight:600}
+  h2::after{content:"";flex:1;height:1px;background:var(--color-border)}
+  .sub{color:var(--color-text-low);font-size:var(--text-sm);margin:6px 0 24px}
+  h3.block{font-size:var(--text-xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--color-text-low);font-weight:var(--weight-semibold);margin:26px 0 12px}
+
+  .grid{display:grid;gap:12px}
+  .g-colors{grid-template-columns:repeat(auto-fill,minmax(170px,1fr))}
+
+  .swatch{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-md);overflow:hidden;cursor:pointer;transition:transform var(--motion-fast);box-shadow:var(--shadow-card)}
+  .swatch:hover{transform:translateY(-2px)}
+  .swatch .chip{height:64px}
+  .swatch .meta{padding:10px 12px}
+  .swatch .name{font-size:13px;font-weight:var(--weight-semibold)}
+  .swatch .role{font-size:11.5px;color:var(--color-text-low)}
+  .swatch .hex{font-family:var(--font-mono);font-size:11.5px;color:var(--color-text-mid);margin-top:6px}
+
+  /* tipografia */
+  .type-card{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-6);box-shadow:var(--shadow-card)}
+  .type-row{display:flex;align-items:baseline;gap:20px;padding:14px 0;border-bottom:1px solid var(--color-border);flex-wrap:wrap}
+  .type-row:last-child{border:none}
+  .type-spec{font-family:var(--font-mono);font-size:11px;color:var(--color-text-low);min-width:200px}
+  .t-3xl{font-family:var(--font-display);font-size:var(--text-3xl);font-weight:700;letter-spacing:var(--tracking-display);line-height:1.1}
+  .t-2xl{font-family:var(--font-display);font-size:var(--text-2xl);font-weight:700;letter-spacing:var(--tracking-display);line-height:1.15}
+  .t-xl{font-family:var(--font-display);font-size:var(--text-xl);font-weight:600;line-height:1.25}
+  .t-lg{font-family:var(--font-body);font-size:var(--text-lg);font-weight:600}
+  .t-base{font-family:var(--font-body);font-size:var(--text-base);color:var(--color-text-mid)}
+  .t-sm{font-family:var(--font-body);font-size:var(--text-sm);color:var(--color-text-mid)}
+  .t-mono{font-family:var(--font-mono);font-size:var(--text-xl);font-weight:600}
+  .t-label{font-size:var(--text-xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);font-weight:600;color:var(--color-text-low)}
+
+  /* ícones */
+  .icon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:12px}
+  .icon-cell{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-md);padding:16px 8px;display:flex;flex-direction:column;align-items:center;gap:10px;box-shadow:var(--shadow-card)}
+  .icon-cell svg{width:24px;height:24px;stroke:var(--color-text-mid)}
+  .icon-cell.accent svg{stroke:var(--color-aqua)}
+  .icon-cell span{font-family:var(--font-mono);font-size:10.5px;color:var(--color-text-low)}
+
+  /* espaçamento */
+  .space-demo{display:flex;align-items:flex-end;gap:14px;flex-wrap:wrap;background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-lg);padding:var(--space-6);box-shadow:var(--shadow-card)}
+  .space-item{display:flex;flex-direction:column;align-items:center;gap:8px}
+  .space-bar{width:28px;background:var(--tint-primary);border:1px solid var(--color-primary);border-radius:4px}
+  .space-item span{font-family:var(--font-mono);font-size:10.5px;color:var(--color-text-low)}
+
+  .radius-demo{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px}
+  .radius-box{width:88px;height:64px;background:var(--color-surface-2);border:1px solid var(--color-border-strong);display:grid;place-items:center;font-family:var(--font-mono);font-size:10.5px;color:var(--color-text-low)}
+
+  /* componentes */
+  .comp{background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-xl);padding:var(--space-6);box-shadow:var(--shadow-card)}
+  .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .btn{font-family:var(--font-body);font-weight:600;font-size:var(--text-sm);padding:11px 22px;border-radius:var(--radius-md);cursor:pointer;border:1px solid transparent;transition:transform var(--motion-fast),filter var(--motion-fast)}
+  .btn:hover{transform:translateY(-1px);filter:brightness(1.06)}
+  .btn-primary{background:var(--color-primary);color:var(--color-on-primary)}
+  .btn-ghost{background:transparent;border-color:var(--color-border);color:var(--color-text-hi)}
+  .btn-danger{background:var(--tint-loss);color:var(--color-loss)}
+  .btn[disabled]{opacity:.5;cursor:not-allowed;transform:none}
+
+  .badge{display:inline-flex;align-items:center;gap:6px;font-size:var(--text-xs);font-weight:600;padding:5px 12px;border-radius:var(--radius-full)}
+  .badge .dot{width:7px;height:7px;border-radius:50%;background:currentColor;animation:pulse 2s infinite}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+  @media (prefers-reduced-motion:reduce){.badge .dot{animation:none}.btn:hover,.swatch:hover{transform:none}}
+  .b-live{background:var(--tint-profit);color:var(--color-profit)}
+  .b-paused{background:var(--color-surface-2);color:var(--color-text-low)}
+  .b-warn{background:var(--tint-amber);color:var(--color-amber)}
+  .b-err{background:var(--tint-loss);color:var(--color-loss)}
+  .b-test{background:var(--tint-info);color:var(--color-info)}
+
+  .kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}
+  .kpi{background:var(--color-surface-2);border:1px solid var(--color-border);border-radius:var(--radius-md);padding:14px 16px}
+  .kpi .l{font-size:11.5px;letter-spacing:var(--tracking-caps);text-transform:uppercase;color:var(--color-text-low);font-weight:600}
+  .kpi .v{font-family:var(--font-mono);font-size:22px;font-weight:600;margin-top:6px}
+  .kpi .d{font-family:var(--font-mono);font-size:12px;margin-top:3px}
+  .up{color:var(--color-profit)}.down{color:var(--color-loss)}
+
+  .field{display:flex;flex-direction:column;gap:6px;max-width:280px}
+  .field label{font-size:var(--text-sm);font-weight:500}
+  .field input{font-family:var(--font-mono);font-size:var(--text-sm);height:44px;padding:0 14px;border-radius:var(--radius-sm);border:1px solid var(--color-border);background:var(--color-surface-2);color:var(--color-text-hi)}
+  .field input:focus{outline:none;border-color:var(--color-primary);box-shadow:0 0 0 3px var(--tint-primary)}
+  .field .hint{font-size:var(--text-xs);color:var(--color-text-low)}
+  .field.error input{border-color:var(--color-loss)}
+  .field.error .hint{color:var(--color-loss)}
+
+  table{width:100%;border-collapse:collapse;font-size:var(--text-sm)}
+  th{font-size:var(--text-xs);text-transform:uppercase;letter-spacing:var(--tracking-caps);color:var(--color-text-low);text-align:left;padding:10px 12px;border-bottom:1px solid var(--color-border)}
+  td{padding:12px;border-bottom:1px solid var(--color-border)}
+  td.num,th.num{text-align:right;font-family:var(--font-mono)}
+  tr:nth-child(even) td{background:color-mix(in srgb,var(--color-surface-2) 40%,transparent)}
+
+  .chart-line{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+  .chart-pill{display:flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:11.5px;color:var(--color-text-mid)}
+  .chart-pill i{width:22px;height:8px;border-radius:4px;display:block}
+
+  footer{margin-top:72px;color:var(--color-text-low);font-size:var(--text-xs);text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <div class="eyebrow">Design System · v1.0</div>
+      <h1><span class="grad">Blue Hour</span> Styleguide</h1>
+      <p class="lede">Referência visual viva do sistema multi-tema: 7 paletas × 2 modos, todas sobre os mesmos tokens semânticos. Troque a paleta e o modo para validar qualquer combinação — os swatches, hexes e componentes atualizam ao vivo.</p>
+    </div>
+    <div class="toggle" role="group" aria-label="Alternar tema">
+      <button id="btnLight" onclick="setTheme('light')">☀ Daybreak</button>
+      <button id="btnDark" class="active" onclick="setTheme('dark')">☾ Blue Hour</button>
+    </div>
+    <div class="pal-row" id="palRow" role="group" aria-label="Escolher paleta"></div>
+  </header>
+
+  <!-- 01 COR -->
+  <section>
+    <h2><span class="num">01</span>Cor</h2>
+    <p class="sub">Superfícies em camadas, marca em Íris + Aqua, semântica reservada ao mercado. Os chips refletem o tema ativo.</p>
+
+    <h3 class="block">Fundação</h3>
+    <div class="grid g-colors">
+      <div class="swatch"><div class="chip" style="background:var(--color-bg)"></div><div class="meta"><div class="name">Fundo</div><div class="role">bg</div><div class="hex" data-var="--color-bg"></div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--color-surface)"></div><div class="meta"><div class="name">Superfície</div><div class="role">surface</div><div class="hex" data-var="--color-surface"></div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--color-surface-2)"></div><div class="meta"><div class="name">Superfície 2</div><div class="role">surface-2</div><div class="hex" data-var="--color-surface-2"></div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--color-border)"></div><div class="meta"><div class="name">Borda</div><div class="role">border</div><div class="hex" data-var="--color-border"></div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--color-text-hi)"></div><div class="meta"><div class="name">Texto alto</div><div class="role">text-hi</div><div class="hex" data-var="--color-text-hi"></div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--color-text-mid)"></div><div class="meta"><div class="name">Texto médio</div><div class="role">text-mid</div><div class="hex" data-var="--color-text-mid"></div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--color-text-low)"></div><div class="meta"><div class="name">Texto baixo</div><div class="role">text-low</div><div class="hex" data-var="--color-text-low"></div></div></div>
+    </div>
+
+    <h3 class="block">Marca &amp; acentos</h3>
+    <div class="grid g-colors">
+      <div class="swatch"><div class="chip" style="background:var(--color-primary)"></div><div class="meta"><div class="name">Íris</div><div class="role">primary · ações</div><div class="hex" data-var="--color-primary"></div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--color-primary-strong)"></div><div class="meta"><div class="name">Íris Forte</div><div class="role">hover</div><div class="hex" data-var="--color-primary-strong"></div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--color-aqua)"></div><div class="meta"><div class="name">Aqua Pulse</div><div class="role">automação · live</div><div class="hex" data-var="--color-aqua"></div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--color-amber)"></div><div class="meta"><div class="name">Âmbar Solar</div><div class="role">atenção</div><div class="hex" data-var="--color-amber"></div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--gradient-brand)"></div><div class="meta"><div class="name">Gradiente de marca</div><div class="role">logo · avatares de robô</div><div class="hex">Íris → Aqua · 92°</div></div></div>
+    </div>
+
+    <h3 class="block">Semântica de trading</h3>
+    <div class="grid g-colors">
+      <div class="swatch"><div class="chip" style="background:var(--color-profit)"></div><div class="meta"><div class="name">Lucro</div><div class="role">P&amp;L + · compra</div><div class="hex" data-var="--color-profit"></div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--color-loss)"></div><div class="meta"><div class="name">Perda</div><div class="role">P&amp;L − · venda · erro</div><div class="hex" data-var="--color-loss"></div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--color-info)"></div><div class="meta"><div class="name">Info</div><div class="role">neutro</div><div class="hex" data-var="--color-info"></div></div></div>
+      <div class="swatch"><div class="chip" style="background:var(--color-warning)"></div><div class="meta"><div class="name">Atenção</div><div class="role">risco · limites</div><div class="hex" data-var="--color-warning"></div></div></div>
+    </div>
+
+    <h3 class="block">Séries de gráficos (ordem fixa)</h3>
+    <div class="chart-line">
+      <span class="chart-pill"><i style="background:var(--chart-1)"></i>1 · aqua</span>
+      <span class="chart-pill"><i style="background:var(--chart-2)"></i>2 · íris</span>
+      <span class="chart-pill"><i style="background:var(--chart-3)"></i>3 · âmbar</span>
+      <span class="chart-pill"><i style="background:var(--chart-4)"></i>4 · info</span>
+      <span class="chart-pill"><i style="background:var(--chart-5)"></i>5 · rosa</span>
+    </div>
+  </section>
+
+  <!-- 02 TIPOGRAFIA -->
+  <section>
+    <h2><span class="num">02</span>Tipografia</h2>
+    <p class="sub">Sora (display) · Inter (corpo) · JetBrains Mono (dados financeiros). Escala 12–48px, máximo 3 pesos.</p>
+    <div class="type-card">
+      <div class="type-row"><span class="type-spec">Sora 700 · 48/1.1 · −0.02em</span><span class="t-3xl">Robôs que operam por você</span></div>
+      <div class="type-row"><span class="type-spec">Sora 700 · 32/1.15 · −0.02em</span><span class="t-2xl">Desempenho da carteira</span></div>
+      <div class="type-row"><span class="type-spec">Sora 600 · 24/1.25</span><span class="t-xl">Estratégias ativas</span></div>
+      <div class="type-row"><span class="type-spec">Inter 600 · 20/1.4</span><span class="t-lg">Omega Grid · BTC/USDT</span></div>
+      <div class="type-row"><span class="type-spec">Inter 400 · 16/1.55</span><span class="t-base">O robô executa a estratégia dentro dos limites de risco que você define — e pausa sozinho se o drawdown passar do combinado.</span></div>
+      <div class="type-row"><span class="type-spec">Inter 400 · 14/1.55</span><span class="t-sm">Última execução há 12 segundos · latência média 84 ms</span></div>
+      <div class="type-row"><span class="type-spec">JetBrains Mono 600 · 24</span><span class="t-mono"><span class="up">+R$ 4.218,07</span> · <span class="down">−6,8%</span> · 0.0042 BTC</span></div>
+      <div class="type-row"><span class="type-spec">Inter 600 · 12 · caps +0.06em</span><span class="t-label">P&amp;L 30 dias</span></div>
+    </div>
+  </section>
+
+  <!-- 03 ICONOGRAFIA -->
+  <section>
+    <h2><span class="num">03</span>Iconografia</h2>
+    <p class="sub">Lucide · grid 24px · stroke 1.75 · pontas arredondadas. Cor padrão text-mid; interativo em Íris/Aqua. Setas ▲▼ são o único uso de profit/loss em ícones.</p>
+    <div class="icon-grid" id="icons"></div>
+  </section>
+
+  <!-- 04 ESPAÇAMENTO -->
+  <section>
+    <h2><span class="num">04</span>Espaçamento &amp; raio</h2>
+    <p class="sub">Grid de 4px. Escala 4–96. Raio 8/12/16/20/full.</p>
+    <div class="space-demo" id="spaces"></div>
+    <div class="radius-demo">
+      <div class="radius-box" style="border-radius:var(--radius-sm)">8</div>
+      <div class="radius-box" style="border-radius:var(--radius-md)">12</div>
+      <div class="radius-box" style="border-radius:var(--radius-lg)">16</div>
+      <div class="radius-box" style="border-radius:var(--radius-xl)">20</div>
+      <div class="radius-box" style="border-radius:var(--radius-full);width:64px">full</div>
+    </div>
+  </section>
+
+  <!-- 05 COMPONENTES -->
+  <section>
+    <h2><span class="num">05</span>Componentes</h2>
+    <p class="sub">Padrões canônicos. Tudo derivado dos tokens — nenhum hex solto.</p>
+
+    <div class="comp">
+      <h3 class="block" style="margin-top:0">Botões</h3>
+      <div class="row">
+        <button class="btn btn-primary">Criar robô</button>
+        <button class="btn btn-ghost">Ajustar parâmetros</button>
+        <button class="btn btn-ghost">Ver histórico</button>
+        <button class="btn btn-danger">Pausar robô</button>
+        <button class="btn btn-primary" disabled>Salvando…</button>
+      </div>
+
+      <h3 class="block">Badges de status</h3>
+      <div class="row">
+        <span class="badge b-live"><span class="dot"></span>Operando</span>
+        <span class="badge b-paused">Pausado</span>
+        <span class="badge b-warn">Drawdown próximo do limite</span>
+        <span class="badge b-err">Stop acionado</span>
+        <span class="badge b-test">Backtest</span>
+      </div>
+
+      <h3 class="block">KPIs</h3>
+      <div class="kpi-grid">
+        <div class="kpi"><div class="l">P&amp;L 30 dias</div><div class="v up">+R$ 4.218</div><div class="d up">▲ 12,4%</div></div>
+        <div class="kpi"><div class="l">Win rate</div><div class="v">68,2%</div><div class="d" style="color:var(--color-text-low)">142 trades</div></div>
+        <div class="kpi"><div class="l">Drawdown máx.</div><div class="v down">−6,8%</div><div class="d" style="color:var(--color-text-low)">limite −8%</div></div>
+        <div class="kpi"><div class="l">Sharpe</div><div class="v">2,31</div><div class="d up">▲ 0,4</div></div>
+      </div>
+
+      <h3 class="block">Formulário</h3>
+      <div class="row" style="align-items:flex-start;gap:24px">
+        <div class="field">
+          <label for="f1">Capital alocado</label>
+          <input id="f1" value="R$ 25.000,00">
+          <span class="hint">Mínimo R$ 1.000</span>
+        </div>
+        <div class="field error">
+          <label for="f2">Stop de drawdown</label>
+          <input id="f2" value="−18%">
+          <span class="hint">⚠ Acima do máximo permitido (−15%)</span>
+        </div>
+      </div>
+
+      <h3 class="block">Tabela de ordens</h3>
+      <table>
+        <thead><tr><th>Robô</th><th>Par</th><th>Lado</th><th class="num">Preço</th><th class="num">Qtd</th><th class="num">P&amp;L</th></tr></thead>
+        <tbody>
+          <tr><td>Omega Grid</td><td>BTC/USDT</td><td style="color:var(--color-profit);font-weight:600">Compra</td><td class="num">64.218,50</td><td class="num">0.0120</td><td class="num up">+128,40</td></tr>
+          <tr><td>Delta Scalp</td><td>ETH/USDT</td><td style="color:var(--color-loss);font-weight:600">Venda</td><td class="num">3.402,10</td><td class="num">0.4500</td><td class="num down">−42,17</td></tr>
+          <tr><td>Omega Grid</td><td>BTC/USDT</td><td style="color:var(--color-profit);font-weight:600">Compra</td><td class="num">63.980,00</td><td class="num">0.0120</td><td class="num up">+96,02</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>Blue Hour Design System v2.0 · multi-tema (7 paletas × 2 modos) · tokens em <code>tokens/tokens.css</code> e <code>tokens/tokens.json</code> · spec completa em <code>design-system.md</code></footer>
+</div>
+
+<script>
+const PALETTES=[
+  {id:'blue-hour',label:'Blue Hour (padrão)',d:'#8F7BFF',l:'#5B47E0'},
+  {id:'cosmos-candy',label:'Cosmos Candy',d:'#F06CA8',l:'#C73E84'},
+  {id:'neon-circuit',label:'Neon Circuit',d:'#5C82F2',l:'#2249AE'},
+  {id:'heritage-mode',label:'Heritage Mode',d:'#EAB63E',l:'#A8761B'},
+  {id:'wisteria-soft',label:'Wisteria Soft',d:'#A48BE8',l:'#735DA5'},
+  {id:'graphite-minimal',label:'Graphite Minimal',d:'#8CA3CC',l:'#4A5C82'},
+  {id:'vermilion-studio',label:'Vermilion Studio',d:'#8C8EDE',l:'#4D51A0'},
+  {id:'rose-tulip',label:'Rose Tulip',d:'#EFCE76',l:'#926F12'},
+  {id:'teal-tangerine',label:'Teal Tangerine',d:'#90D5C8',l:'#2B8070'},
+  {id:'prussian-retro',label:'Prussian Retro',d:'#F6CA6F',l:'#996B0A'},
+  {id:'periwinkle-lime',label:'Periwinkle Lime',d:'#7798EE',l:'#1949C7'},
+  {id:'summer-sky',label:'Summer Sky',d:'#EEC077',l:'#9F6913'},
+  {id:'tulip-blonde',label:'Tulip Blonde',d:'#F8E96D',l:'#847708'},
+  {id:'raspberry-cocoa',label:'Raspberry Cocoa',d:'#D590AA',l:'#A83862'},
+  {id:'pine-sage',label:'Pine Sage',d:'#C6D590',l:'#697A29'},
+  {id:'cobalt-mist',label:'Cobalt Mist',d:'#6C9BF9',l:'#0D50D3'},
+  {id:'lilac-canary',label:'Lilac Canary',d:'#E7C37E',l:'#966C1C'},
+  {id:'lilac-ember',label:'Lilac Ember',d:'#E9A67C',l:'#BA5A1F'},
+  {id:'primary-twist',label:'Primary Twist',d:'#F2DA73',l:'#87700D'},
+  {id:'sapphire-neon',label:'Sapphire Neon',d:'#7E6CF9',l:'#270DD3'},
+  {id:'graystone-emerald',label:'Graystone Emerald',d:'#90D4D5',l:'#2B7F80'},
+  {id:'azure-punch',label:'Azure Punch',d:'#839DE2',l:'#2A51B6'},
+  {id:'desert-dusk',label:'Desert Dusk',d:'#80B7E5',l:'#2676BA'},
+  {id:'apricot-vintage',label:'Apricot Vintage',d:'#DFB686',l:'#9F6A2A'},
+  {id:'pop-mustard',label:'Pop Mustard',d:'#F9E16C',l:'#8B7509'},
+  {id:'dune-blush',label:'Dune Blush',d:'#D5AA90',l:'#A86338'},
+  {id:'alpine-moss',label:'Alpine Moss',d:'#85B1E0',l:'#2D6DB3'},
+  {id:'clay-raspberry',label:'Clay Raspberry',d:'#E77EA4',l:'#BD245B'},
+  {id:'walnut-aegean',label:'Walnut Aegean',d:'#EDA578',l:'#BF591A'},
+  {id:'strawberry-mocha',label:'Strawberry Mocha',d:'#83E2D9',l:'#1F847A'},
+  {id:'october-mist',label:'October Mist',d:'#D5AB90',l:'#A86438'},
+  {id:'ruby-peach',label:'Ruby Peach',d:'#E4A881',l:'#B35E26'},
+  {id:'dawn-papaya',label:'Dawn Papaya',d:'#F1D174',l:'#8D6D0F'},
+  {id:'antique-brandy',label:'Antique Brandy',d:'#E0C685',l:'#8F7124'},
+  {id:'autumn-beryl',label:'Autumn Beryl',d:'#E5B480',l:'#A76722'},
+  {id:'retro-block',label:'Retro Block 90s',d:'#75C0F0',l:'#147BBD'},
+  {id:'bohemian-sage',label:'Bohemian Sage',d:'#D5B090',l:'#A36836'},
+  {id:'sky-fuchsia',label:'Sky Fuchsia',d:'#F2DC73',l:'#87720D'},
+  {id:'disco-lime',label:'Disco Lime',d:'#D590BC',l:'#A83880'},
+  {id:'beach-cyan',label:'Beach Cyan',d:'#EC9D79',l:'#C5511B'},
+  {id:'school-recess',label:'School Recess',d:'#E87DB1',l:'#BF216F'},
+  {id:'eggplant-sun',label:'Eggplant Sun',d:'#F9ED6C',l:'#7D7208'},
+  {id:'behr-whisper',label:'Behr Whisper',d:'#D5A690',l:'#A85C38'},
+  {id:'moroccan-teal',label:'Moroccan Teal',d:'#F5D570',l:'#91710A'},
+  {id:'candy-neon',label:'Candy Neon',d:'#E3F66F',l:'#6C7D08'},
+  {id:'kawaii-soft',label:'Kawaii Soft',d:'#F96CBD',l:'#D30D7F'},
+  {id:'magenta-grape',label:'Magenta Grape',d:'#EF76B1',l:'#CA176E'},
+  {id:'amethyst-butterscotch',label:'Amethyst Butterscotch',d:'#F8D46D',l:'#926F09'},
+  {id:'citrus-pastel',label:'Citrus Pastel',d:'#F1A774',l:'#BE5913'},
+  {id:'bubblegum-pop',label:'Bubblegum Pop',d:'#C0EE77',l:'#578310'},
+  {id:'seafoam-chartreuse',label:'Seafoam Chartreuse',d:'#76CEEF',l:'#147FA6'}
+];
+function curPal(){return document.documentElement.getAttribute('data-palette')||'blue-hour'}
+function renderPals(){
+  const mode=document.documentElement.getAttribute('data-theme')||'dark';
+  document.getElementById('palRow').innerHTML=PALETTES.map(p=>
+    `<button class="pal ${p.id===curPal()?'active':''}" onclick="setPalette('${p.id}')">
+      <span class="sw" style="background:${mode==='dark'?p.d:p.l}"></span>${p.label}</button>`).join('');
+}
+function setPalette(id){
+  document.documentElement.setAttribute('data-palette',id);
+  renderPals();fillHex();
+}
+function setTheme(t){
+  document.documentElement.setAttribute('data-theme',t);
+  document.getElementById('btnLight').classList.toggle('active',t==='light');
+  document.getElementById('btnDark').classList.toggle('active',t==='dark');
+  renderPals();fillHex();
+}
+function fillHex(){
+  const cs=getComputedStyle(document.documentElement);
+  document.querySelectorAll('[data-var]').forEach(el=>{
+    el.textContent=cs.getPropertyValue(el.dataset.var).trim().toUpperCase();
+  });
+}
+/* ícones-chave do domínio (Lucide, stroke 1.75) */
+const ICONS = {
+  bot:'<rect x="3" y="8" width="18" height="12" rx="3"/><path d="M12 8V4M8 4h8"/><circle cx="9" cy="14" r="1"/><circle cx="15" cy="14" r="1"/>',
+  activity:'<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
+  'trending-up':'<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
+  'trending-down':'<polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/>',
+  shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>',
+  play:'<polygon points="6 3 20 12 6 21 6 3"/>',
+  pause:'<rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>',
+  'settings-2':'<path d="M20 7h-9M14 17H5"/><circle cx="17" cy="17" r="3"/><circle cx="7" cy="7" r="3"/>',
+  zap:'<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+  wallet:'<path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 0 0 4h4v-4Z"/>',
+  bell:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
+  history:'<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/>'
+};
+const grid=document.getElementById('icons');
+Object.entries(ICONS).forEach(([name,paths],i)=>{
+  grid.insertAdjacentHTML('beforeend',
+    `<div class="icon-cell${i<2?' accent':''}"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">${paths}</svg><span>${name}</span></div>`);
+});
+/* escala de espaçamento */
+const SP=[4,8,12,16,24,32,48,64,96];
+document.getElementById('spaces').innerHTML = SP.map(v=>
+  `<div class="space-item"><div class="space-bar" style="height:${v}px"></div><span>${v}</span></div>`).join('');
+renderPals();fillHex();
+</script>
+</body>
+</html>
