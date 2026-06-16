@@ -58,10 +58,10 @@ export default function RobotCard({ robot, onMutated }: RobotCardProps) {
   const [showArchiveConfirm, setShowArchiveConfirm] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
+  const sparkData = robot.sparkline_data ?? []
   const isPositive =
-    robot.sparkline_data.length >= 2
-      ? robot.sparkline_data[robot.sparkline_data.length - 1] >=
-        robot.sparkline_data[0]
+    sparkData.length >= 2
+      ? sparkData[sparkData.length - 1] >= sparkData[0]
       : true
 
   const retColor =
@@ -339,7 +339,7 @@ export default function RobotCard({ robot, onMutated }: RobotCardProps) {
 
         {/* 3. SparklineChart */}
         <div>
-          <SparklineChart sparkline_data={robot.sparkline_data} positive={isPositive} />
+          <SparklineChart sparkline_data={sparkData} positive={isPositive} />
           <div
             style={{
               display: 'flex',

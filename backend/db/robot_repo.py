@@ -62,15 +62,9 @@ def create_robot(
     try:
         result = supabase.table("robots").insert(data).execute()
     except Exception as exc:
+        # supabase-py v2 raises APIError on DB errors (incl. unique violations).
         _handle_unique_violation(exc, payload.name)
         raise
-
-    if result.error:
-        _handle_unique_violation(Exception(str(result.error)), payload.name)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to create robot",
-        )
 
     rows = result.data
     if not rows:
@@ -168,14 +162,6 @@ def update_robot(
         if payload.name:
             _handle_unique_violation(exc, payload.name)
         raise
-
-    if result.error:
-        if payload.name:
-            _handle_unique_violation(Exception(str(result.error)), payload.name)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to update robot",
-        )
 
     rows = result.data
     if not rows:
@@ -321,13 +307,6 @@ def duplicate_robot(
     except Exception as exc:
         _handle_unique_violation(exc, new_name)
         raise
-
-    if result.error:
-        _handle_unique_violation(Exception(str(result.error)), new_name)
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Failed to duplicate robot",
-        )
 
     rows = result.data
     if not rows:
