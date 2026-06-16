@@ -100,7 +100,7 @@ No existing production code — this phase establishes the entire repository sca
 - `blue-hour-design-system/tokens/tokens.css`: Drop into `/frontend` as the CSS foundation. Import once globally (`main.tsx` or `index.css`). All color, spacing, and typography tokens are here.
 - `blue-hour-design-system/palettes.js`: Theme switching runtime. Import in the React app's theme context. `initTheme()` reads/writes localStorage — same API as the prototype.
 - `blue-hour-design-system/tailwind.config.js`: Ready-to-use Tailwind config. Copy to `/frontend/tailwind.config.js` if using Tailwind.
-- **Apache ECharts 5.5.1**: Used in prototype via CDN. In production, install as npm package (`echarts@5.5.1`). Used for equity curve (Sumário), sparklines (robot cards), and backtest equity chart.
+- **Apache ECharts 6.1.0**: Used in prototype via CDN. In production, install as npm package (`echarts@6.1.0`). Used for equity curve (Sumário), sparklines (robot cards), and backtest equity chart.
 - **Fonts**: Sora (400/600/700), Inter (400/500/600), JetBrains Mono (400/600). Load via Google Fonts in the React app's `<head>`.
 
 ### Established Patterns
