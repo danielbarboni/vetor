@@ -7,7 +7,7 @@ this interface so the RobotEngine is broker-agnostic.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 
 class BrokerPort(ABC):

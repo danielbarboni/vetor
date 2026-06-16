@@ -34,7 +34,7 @@ import asyncio
 import logging
 import time
 from datetime import datetime, timezone
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Dict, Literal
 
 from engine.fill_simulator import FillSimulator
 from engine.strategy_base import StrategyBase

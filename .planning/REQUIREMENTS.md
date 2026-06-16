@@ -45,12 +45,12 @@
 
 ### Robot Execution (EXE)
 
-- [ ] **EXE-01**: Start execution only with valid and saved parameters; transition to Executando state with green badge
-- [ ] **EXE-02**: Stop execution: cancels pending orders; asks whether to close open position
-- [ ] **EXE-03**: Modo Simulado: fills orders using configurable policy per robot (Pessimista by default; Moderado and Otimista available); badge shown on card and report
-- [ ] **EXE-04**: Resolve continuous contract suffix (%) to current expiry; perform automatic rollover; record effective contract per order (e.g., WDOF26)
-- [ ] **EXE-05**: Persist all orders with: timestamp, price, quantity, type (market/limit), status (filled/cancelled/rejected/expired), entry/exit classification
-- [ ] **EXE-06**: Recovery after failure: engine rehydrates robot position state without duplicating orders (idempotency)
+- [x] **EXE-01**: Start execution only with valid and saved parameters; transition to Executando state with green badge
+- [x] **EXE-02**: Stop execution: cancels pending orders; asks whether to close open position
+- [x] **EXE-03**: Modo Simulado: fills orders using configurable policy per robot (Pessimista by default; Moderado and Otimista available); badge shown on card and report
+- [x] **EXE-04**: Resolve continuous contract suffix (%) to current expiry; perform automatic rollover; record effective contract per order (e.g., WDOF26)
+- [x] **EXE-05**: Persist all orders with: timestamp, price, quantity, type (market/limit), status (filled/cancelled/rejected/expired), entry/exit classification
+- [x] **EXE-06**: Recovery after failure: engine rehydrates robot position state without duplicating orders (idempotency)
 
 ### Robot Report — Sumário (SUM)
 

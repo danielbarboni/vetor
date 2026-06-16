@@ -4,7 +4,7 @@ StrategyBase — abstract base for all trading strategies.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Literal, Optional
+from typing import Any, Dict, Literal
 
 Signal = Literal["buy", "sell", None]
 

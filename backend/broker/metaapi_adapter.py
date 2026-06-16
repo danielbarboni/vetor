@@ -6,11 +6,10 @@ One streaming connection serves the system account (Simulado D-06).
 """
 from __future__ import annotations
 
-import asyncio
 import logging
 from collections import deque
 from datetime import datetime, timezone
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List
 
 from broker.broker_port import BrokerPort
 
