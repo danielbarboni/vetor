@@ -49,3 +49,6 @@ backend/.ruff_cache/
 
 # WSL download metadata artifacts
 *:Zone.Identifier
+
+# MetaApi SDK local runtime cache
+.metaapi/
