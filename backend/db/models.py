@@ -22,6 +22,7 @@ class RobotMode(str, Enum):
 
 
 class RobotStatus(str, Enum):
+    rascunho = "rascunho"
     parado = "parado"
     executando = "executando"
     arquivado = "arquivado"
@@ -73,21 +74,40 @@ class BrokerName(str, Enum):
 
 class RobotCreate(BaseModel):
     name: str = Field(..., min_length=1, max_length=100)
-    strategy: str = Field(default="indicadores_tecnicos")
+    strategy_type: str = Field(default="indicadores_tecnicos")
     mode: RobotMode
     asset: AssetSymbol
-    capital: Optional[float] = Field(default=None, ge=0)
+    simulation_capital: Optional[float] = Field(default=None, ge=0)
+    fill_policy: FillPolicy = FillPolicy.pessimista
+
+    @classmethod
+    def model_validate(cls, obj: Any, **kwargs: Any) -> "RobotCreate":  # type: ignore[override]
+        return super().model_validate(obj, **kwargs)
+
+    def model_post_init(self, __context: Any) -> None:  # type: ignore[override]
+        """Enforce D-08: simulation_capital required iff mode=simulado."""
+        if self.mode == RobotMode.simulado and self.simulation_capital is None:
+            raise ValueError("simulation_capital is required when mode='simulado'")
+        if self.mode == RobotMode.real and self.simulation_capital is not None:
+            raise ValueError("simulation_capital must be null when mode='real'")
+
+
+class RobotUpdate(BaseModel):
+    name: Optional[str] = Field(default=None, min_length=1, max_length=100)
+    fill_policy: Optional[FillPolicy] = None
+    params: Optional[Dict[str, Any]] = None
 
 
 class RobotOut(BaseModel):
     id: UUID
     user_id: UUID
     name: str
-    strategy: str
+    strategy_type: str
     mode: RobotMode
     status: RobotStatus
     asset: AssetSymbol
-    capital: Optional[float] = None
+    simulation_capital: Optional[float] = None
+    fill_policy: FillPolicy
     params: Optional[Dict[str, Any]] = None
     effective_contract: Optional[str] = None
     created_at: datetime
