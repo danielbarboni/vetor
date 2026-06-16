@@ -32,7 +32,7 @@ import time
 # NOTE: Adjust import path if the installed package exposes a different top-level name.
 # Confirmed package: metaapi-cloud-sdk==29.1.1 (pip install metaapi-cloud-sdk==29.1.1)
 try:
-    from metaapi_cloud_sdk import MetaApi  # NOTE: verify exact class name in v29
+    from metaapi_cloud_sdk import MetaApi, SynchronizationListener
 except ImportError as exc:  # pragma: no cover
     sys.exit(
         f"metaapi-cloud-sdk not installed: {exc}\n"
@@ -52,10 +52,13 @@ from backend.config import settings  # noqa: E402
 # Logging
 # ---------------------------------------------------------------------------
 logging.basicConfig(
-    level=logging.DEBUG,
+    level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s — %(message)s",
     stream=sys.stdout,
 )
+# Quiet the very chatty transport libs (DEBUG of these produced a 49 MB log).
+for _noisy in ("httpcore", "httpx", "socketio", "engineio", "asyncio", "websockets"):
+    logging.getLogger(_noisy).setLevel(logging.WARNING)
 log = logging.getLogger("poc_metaapi")
 
 # ---------------------------------------------------------------------------
@@ -77,16 +80,19 @@ ORDER_CLIENT_ID = "poc-vetor-01-09-001"  # NOTE: confirm 'clientOrderId' field i
 # ---------------------------------------------------------------------------
 
 
-class TickListener:
+class TickListener(SynchronizationListener):
     """Receives streaming price/tick events from MetaAPI.
 
-    NOTE: In v29 the listener base class may be named differently.
-    Possible names: SynchronizationListener, MetaApiSynchronizationListener,
-    or the account may expose subscribe_to_market_data() with a callback dict.
-    Confirm exact inheritance pattern at run time.
+    MUST subclass SynchronizationListener: the SDK calls MANY callbacks
+    (on_symbol_specification_updated, on_health_status,
+    on_broker_connection_status_changed, …). The base class provides no-op
+    defaults for all of them, so we override only the events we observe.
+    FINDING for plan 01-10: the production adapter listener must do the same —
+    a standalone class triggers AttributeError on every un-overridden callback.
     """
 
     def __init__(self, max_ticks: int) -> None:
+        super().__init__()
         self._count = 0
         self._max = max_ticks
         self._done = asyncio.Event()
@@ -95,44 +101,27 @@ class TickListener:
     def done(self) -> asyncio.Event:
         return self._done
 
-    # NOTE: Method name may be on_symbol_price_updated, on_tick, or on_quote —
-    # confirm against v29 changelog.  Below uses the most likely v29 name.
-    async def on_symbol_price_updated(  # NOTE: verify method name
-        self, account_id: str, prices: list, equity: float, margin: float, free_margin: float, margin_level: float
-    ) -> None:
-        """Called when price/tick arrives for a subscribed symbol."""
+    async def on_symbol_price_updated(self, instance_index, price) -> None:
+        """Single-symbol tick. `price` is a MetatraderSymbolPrice (dict-like:
+        symbol, bid, ask, time, brokerTime, …). This is the live quote feed."""
         if self._count >= self._max:
             return
-        for price in prices:
-            self._count += 1
-            log.info(
-                "[TICK %02d/%02d] raw structure: %s",
-                self._count,
-                self._max,
-                json.dumps(price, default=str),
-            )
+        self._count += 1
+        log.info("[TICK %02d/%02d] %s", self._count, self._max, json.dumps(price, default=str))
         if self._count >= self._max:
             self._done.set()
 
-    async def on_connected(self, account_id: str, instance_index: int) -> None:
-        log.info("[RECONNECT] Connected: account=%s instance=%s", account_id, instance_index)
+    async def on_connected(self, instance_index, replicas) -> None:
+        log.info("[CONNECT] instance=%s replicas=%s", instance_index, replicas)
 
-    async def on_disconnected(self, account_id: str, instance_index: int) -> None:
+    async def on_disconnected(self, instance_index) -> None:
         log.warning(
-            "[RECONNECT] Disconnected: account=%s instance=%s — "
-            "RISK-02: SDK does NOT replay missed ticks; confirm here.",
-            account_id,
+            "[DISCONNECT] instance=%s — RISK-02: confirm missed ticks are NOT replayed on reconnect.",
             instance_index,
         )
 
-    async def on_synchronization_started(self, account_id: str, *args, **kwargs) -> None:  # type: ignore[override]
-        log.info("[SYNC] Synchronization started: account=%s", account_id)
-
-    async def on_account_information_updated(self, account_id: str, account_information: dict) -> None:
-        log.debug("[ACCOUNT] %s", json.dumps(account_information, default=str))
-
-    async def on_positions_updated(self, account_id: str, positions: list, removed_position_ids: list) -> None:
-        log.debug("[POSITIONS] count=%d removed=%s", len(positions), removed_position_ids)
+    async def on_synchronization_started(self, instance_index, *args, **kwargs) -> None:
+        log.info("[SYNC] started: instance=%s", instance_index)
 
     async def on_orders_updated(self, account_id: str, orders: list, completed_order_ids: list) -> None:
         log.debug("[ORDERS] count=%d completed=%s", len(orders), completed_order_ids)
