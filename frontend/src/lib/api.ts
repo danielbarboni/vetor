@@ -387,3 +387,72 @@ export function getOrderEvents(robotId: string, orderId: string): Promise<OrderE
 export function getRobotEquity(id: string, period: SumarioPeriod = 'TUDO'): Promise<EquityResponse> {
   return apiFetch<EquityResponse>(`/robots/${id}/equity?period=${period}`)
 }
+
+// ─── Backtests (BCK-01..04) ──────────────────────────────────────────────────
+
+export type BacktestStatus = 'aguardando' | 'processando' | 'concluido' | 'erro'
+
+export interface BacktestRow {
+  id: string
+  robot_id: string
+  user_id: string
+  status: BacktestStatus
+  capital: number
+  fill_policy: 'pessimista' | 'moderado' | 'otimista'
+  date_from: string
+  date_to: string
+  include_costs: boolean
+  result: SumarioMetrics | null
+  error: string | null
+  created_at: string
+  completed_at: string | null
+}
+
+export interface BacktestCreatePayload {
+  robot_id: string
+  capital: number
+  fill_policy: 'pessimista' | 'moderado' | 'otimista'
+  date_from: string
+  date_to: string
+  include_costs: boolean
+}
+
+export interface BacktestOrderRow {
+  id?: string
+  backtest_id: string
+  order_class: string
+  type: string
+  status: string
+  price: number | null
+  filled_price: number | null
+  qty: number | null
+  result: number | null
+  filled_at: string | null
+  created_at: string
+  effective_contract: string | null
+}
+
+export interface BacktestOrdersResponse {
+  backtest_id: string
+  orders: BacktestOrderRow[]
+  count: number
+}
+
+export function createBacktest(payload: BacktestCreatePayload): Promise<BacktestRow> {
+  return apiFetch<BacktestRow>('/backtests', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export function getBacktests(): Promise<BacktestRow[]> {
+  return apiFetch<BacktestRow[]>('/backtests')
+}
+
+export function getBacktest(id: string): Promise<BacktestRow> {
+  return apiFetch<BacktestRow>(`/backtests/${id}`)
+}
+
+export function getBacktestOrders(id: string): Promise<BacktestOrdersResponse> {
+  return apiFetch<BacktestOrdersResponse>(`/backtests/${id}/orders`)
+}

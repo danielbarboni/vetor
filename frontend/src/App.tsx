@@ -19,24 +19,16 @@ import MinhaConta from './pages/conta/MinhaConta'
 // Robot Sumário (plan 11)
 import RobotSumario from './pages/sumario/RobotSumario'
 
+// Backtests (plan 12)
+import BacktestList from './pages/backtests/BacktestList'
+import BacktestReport from './pages/backtests/BacktestReport'
+
 // Auth screens
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
 import ForgotPassword from './pages/auth/ForgotPassword'
 import AuthCallback from './pages/auth/AuthCallback'
 import AccountSelector from './pages/auth/AccountSelector'
-
-// Route stub pages — each will be implemented in later plans
-
-function BacktestsStub() {
-  return (
-    <div style={{ padding: '22px 28px' }}>
-      <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--text)' }}>
-        Backtests
-      </h1>
-    </div>
-  )
-}
 
 
 export default function App() {
@@ -63,7 +55,8 @@ export default function App() {
           <Route path="/robos/wizard" element={<RobotWizard />} />
           <Route path="/robos/:id/parametros" element={<RobotEditor />} />
           <Route path="/robos/:id/sumario" element={<RobotSumario />} />
-          <Route path="/backtests" element={<BacktestsStub />} />
+          <Route path="/backtests" element={<BacktestList />} />
+          <Route path="/backtests/:id" element={<BacktestReport />} />
           <Route path="/conta" element={<MinhaConta />} />
           {/* Default redirect */}
           <Route path="/" element={<Navigate to="/robos" replace />} />
