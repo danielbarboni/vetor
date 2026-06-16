@@ -109,6 +109,7 @@ class RobotOut(BaseModel):
     simulation_capital: Optional[float] = None
     fill_policy: FillPolicy
     params: Optional[Dict[str, Any]] = None
+    params_saved_at: Optional[datetime] = None  # EDT-03: set on validated param save
     effective_contract: Optional[str] = None
     created_at: datetime
     updated_at: datetime

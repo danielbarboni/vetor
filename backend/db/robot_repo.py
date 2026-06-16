@@ -9,6 +9,7 @@ Illegal state transitions (e.g. archive while executando) raise 409.
 """
 from __future__ import annotations
 
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
 from fastapi import HTTPException, status
@@ -149,6 +150,8 @@ def update_robot(
         updates["fill_policy"] = payload.fill_policy.value
     if payload.params is not None:
         updates["params"] = payload.params
+        # EDT-03 / RF-EXE-01: record params_saved_at timestamp on successful save
+        updates["params_saved_at"] = datetime.now(timezone.utc).isoformat()
 
     if not updates:
         return get_robot(supabase, user_id, robot_id)

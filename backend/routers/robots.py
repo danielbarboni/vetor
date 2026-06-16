@@ -8,7 +8,7 @@ Endpoints:
   GET    /robots                 — list robots (optional ?status= filter)
   POST   /robots                 — create robot → 201 + rascunho (WIZ-06)
   GET    /robots/{id}            — get single robot
-  PATCH  /robots/{id}            — update name / fill_policy (params in plan 08)
+  PATCH  /robots/{id}            — update name / fill_policy / params (EDT-03)
   DELETE /robots/{id}            — delete robot
   POST   /robots/{id}/archive    — archive (rejects if executando → 409)
   POST   /robots/{id}/unarchive  — unarchive (must be arquivado)
@@ -19,7 +19,8 @@ from __future__ import annotations
 from typing import List, Optional
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from pydantic import ValidationError
 
 from auth.jwt_guard import get_current_user
 from db.models import RobotCreate, RobotOut, RobotUpdate
@@ -34,6 +35,7 @@ from db.robot_repo import (
     update_robot,
 )
 from db.supabase_client import supabase
+from strategies.it_validators import format_validation_errors, validate_it_params
 
 router = APIRouter()
 
@@ -85,12 +87,26 @@ async def update_robot_endpoint(
     user_id: str = Depends(get_current_user),
 ) -> RobotOut:
     """
-    Update robot name and/or fill_policy.
+    Update robot name, fill_policy, and/or IT params (EDT-03 / RF-EXE-01).
 
-    Note: params/strategy config is handled in plan 08.
+    When params are included:
+      - Validates against the full IT [Tangram 3.0] schema (RISK-04).
+      - On validation failure → 422 with field-level errors.
+      - On success → persists params and sets params_saved_at=now().
+
     Returns 404 if not found or owned by another user.
     Returns 409 on duplicate name.
     """
+    # EDT-03: validate IT params when provided
+    if payload.params is not None:
+        try:
+            validate_it_params(payload.params)
+        except ValidationError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+                detail=format_validation_errors(exc)["detail"],
+            )
+
     return update_robot(supabase, user_id, str(robot_id), payload)
 
 
