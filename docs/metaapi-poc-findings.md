@@ -1,175 +1,56 @@
-# MetaAPI v29 PoC Findings
+# MetaAPI v29 PoC — Findings (plan 01-09)
 
-**Status:** TEMPLATE — fill after running `python -m backend.broker.poc_metaapi`
-**Plan:** 01-09 (Vetor trading platform, phase 1)
-**Purpose:** Document the actual v29 SDK surface so plan 10 (BrokerPort / MetaAPIAdapter)
-is built against real observed behaviour, not training-data assumptions.
+**Date:** 2026-06-16 · **SDK:** metaapi-cloud-sdk==29.1.1 · **Account:** 5518fd64-… (MetaQuotes-Demo)
 
-Run command:
-```
-cd /path/to/vetor
-source backend/.venv/bin/activate   # or however your venv is activated
-python -m backend.broker.poc_metaapi 2>&1 | tee /tmp/poc_metaapi_$(date +%Y%m%d_%H%M%S).log
-```
+## Run status
+- ✅ **Auth + provisioning API work** — token valid; `GET /users/current/accounts/{id}` → 200; account state `UNDEPLOYED`.
+- ⛔ **`account.deploy()` → 403 ForbiddenException**: *"To allow trading account deployment please top up your account."* MetaApi requires a positive balance to deploy (run the cloud terminal). Live tick/order round-trip is therefore **pending a MetaApi top-up**.
+- ✅ **Full v29 API surface extracted from the installed SDK source** (below) — this is the ground truth plan 01-10 builds against; the `# NOTE:` guesses in the PoC are now resolved.
+- ✅ **Async model: native asyncio** (SDK uses httpx/anyio, all `async def`) — no thread bridge. Confirms A9 → fits FastAPI `asyncio.create_task` per robot (D-17).
 
----
+## Confirmed API surface (v29.1.1)
 
-## 1. Connection and Synchronisation
+### Top-level
+`from metaapi_cloud_sdk import MetaApi, SynchronizationListener`
 
-### 1a. Top-level class / constructor
+### Account (`MetatraderAccount`, from `api.metatrader_account_api.get_account(id)`)
+| Method | Notes |
+|--------|-------|
+| `await account.deploy()` / `await account.undeploy()` | deploy needs MetaApi balance (403 otherwise) |
+| `await account.wait_deployed()` / `await account.wait_connected()` | poll until ready |
+| `account.get_streaming_connection(...)` | → streaming connection (ticks + sync listener) |
+| `account.get_rpc_connection()` | → RPC connection (positions/orders queries) |
 
-| Item | Expected (plan assumption) | Observed (fill here) |
-|------|---------------------------|----------------------|
-| Import path | `from metaapi_cloud_sdk import MetaApi` | ▢ |
-| Constructor kwargs accepted | `(token)` | ▢ |
-| `metatrader_account_api.get_account(id)` | works as-is | ▢ |
-| `account.deploy()` method name | `deploy()` | ▢ |
-| `account.wait_synchronized()` kwargs | `{"applicationPattern": ".*"}` | ▢ |
-| `account.state` possible values | `DEPLOYED / DEPLOYING / UNDEPLOYED` | ▢ |
+### Streaming connection (`StreamingMetaApiConnectionInstance`)
+- `await connection.connect()` / `await connection.wait_synchronized(opts)`
+- `await connection.subscribe_to_market_data(symbol, subscriptions)` — tick stream
+- `connection.unsubscribe_from_market_data(symbol, ...)`
+- `connection.add_synchronization_listener(listener)`
 
-### 1b. Streaming connection
+### Order placement (`MetatraderConnectionInstance` base — both streaming & rpc)
+- `create_market_buy_order(symbol, volume, sl, tp, options)` · `create_market_sell_order(...)`
+- `create_limit_buy_order(...)` · `close_position(position_id, options)`
+- clientId / comment passed via the `options` dict (for idempotency tagging).
 
-| Item | Expected | Observed |
-|------|----------|----------|
-| Get streaming connection | `account.get_streaming_connection()` | ▢ |
-| Connect method | `connection.connect()` | ▢ |
-| Wait synced method | `connection.wait_synchronized()` | ▢ |
-| Listener registration | `connection.add_synchronization_listener(obj)` | ▢ |
+### RPC connection (`RpcMetaApiConnectionInstance`)
+- `await get_positions()` · `get_position(id)` · `await get_orders()` · `get_order(id)`  → state rehydration (EXE-06)
 
----
+### Synchronization listener (`SynchronizationListener` — subclass & override)
+- `on_symbol_price_updated(instance_index, price: MetatraderSymbolPrice)` ← **single-symbol tick** (the live quote feed)
+- `on_symbol_prices_updated(...)` ← batched
+- `on_connected(instance_index, replicas)` / `on_disconnected(instance_index)` ← **reconnection signals (RISK-02)**
+- `on_positions_updated` / `on_positions_replaced` / `on_pending_orders_updated`
+- `on_synchronization_started(...)`
 
-## 2. Tick / Price Event Schema
+## Implications for plan 01-10
+- **Tick payload** = `MetatraderSymbolPrice` model (fields: bid/ask/time/etc. — read the model when implementing the fill simulator).
+- **Reconnection (RISK-02):** on `on_disconnected` → halt; on `on_connected`/`on_synchronization_started` → reset strategy state + re-query `get_positions()/get_orders()` (assume missed ticks NOT replayed). Staleness sentinel still applies.
+- **Idempotency:** pass deterministic `clientId`/`comment` in order `options`.
+- **Adapter shape:** `MetaAPIAdapter(BrokerPort)` wraps a streaming connection (subscribe + listener) for ticks and an RPC connection for queries; one streaming connection serves the system account for Simulado (D-06).
 
-### 2a. Subscription
+## Pending live validation (needs MetaApi top-up + deploy)
+- Exact `MetatraderSymbolPrice` field names/types from a real tick.
+- Order placement response + fill event shape.
+- Reconnection timing/behaviour under a forced disconnect.
 
-| Item | Expected | Observed |
-|------|----------|----------|
-| Subscribe method | `connection.subscribe_to_market_data(symbol, [{...}])` | ▢ |
-| Valid subscription type strings | `"quotes"`, `"ticks"` | ▢ |
-| Unsubscribe method | `connection.unsubscribe_from_market_data(...)` | ▢ |
-| B3 front-month symbol format | `"WIN@N"` or `"WINM25"` | ▢ (note exact string) |
-
-### 2b. Tick event callback
-
-| Item | Expected | Observed |
-|------|----------|----------|
-| Listener method name | `on_symbol_price_updated` | ▢ |
-| Callback signature | `(account_id, prices, equity, margin, free_margin, margin_level)` | ▢ |
-| `prices` element fields | unknown — inspect raw output | ▢ (list all fields + types) |
-| Timestamp field name | unknown | ▢ |
-| Timestamp format | ISO-8601 string or Unix ms? | ▢ |
-| Bid/Ask field names | `bid` / `ask`? | ▢ |
-| Last trade price field | `last`? | ▢ |
-| Volume field | `volume`? | ▢ |
-
-**Paste a sample tick JSON here:**
-```json
-▢
-```
-
----
-
-## 3. Async Model
-
-| Question | Expected (RESEARCH A9) | Observed |
-|----------|----------------------|----------|
-| Does SDK use native asyncio? | Yes (native, same loop as FastAPI) | ▢ |
-| Or does it use a thread bridge? | No | ▢ |
-| `asyncio.run()` works for standalone script? | Yes | ▢ |
-| Safe to `await` SDK calls from FastAPI coroutines? | Yes | ▢ |
-| Any loop.run_until_complete() or threading.Thread in SDK internals? | Unknown | ▢ |
-
-Notes: ▢
-
----
-
-## 4. Order Placement
-
-### 4a. Method names
-
-| Item | Expected | Observed |
-|------|----------|----------|
-| Buy market order | `connection.create_market_buy_order(symbol, volume, options={...})` | ▢ |
-| Sell market order | `connection.create_market_sell_order(symbol, volume, options={...})` | ▢ |
-| `options` dict accepted? | Yes | ▢ |
-| `comment` field in options | `options={"comment": "..."}` | ▢ |
-| `clientOrderId` field in options | `options={"clientOrderId": "..."}` | ▢ |
-
-### 4b. Response structure
-
-| Item | Observed |
-|------|----------|
-| Result type | ▢ (dict / object?) |
-| `orderId` / `order_id` key | ▢ |
-| `tradeResultCode` / status key | ▢ |
-| Error structure on failure | ▢ |
-
-**Paste a sample order result JSON here:**
-```json
-▢
-```
-
----
-
-## 5. State Query — get_positions / get_orders
-
-### 5a. Via async methods
-
-| Method | Works? | Response shape |
-|--------|--------|----------------|
-| `await connection.get_positions()` | ▢ | ▢ |
-| `await connection.get_orders()` | ▢ | ▢ |
-
-### 5b. Via terminal_state (synchronous)
-
-| Attribute | Works? | Type / shape |
-|-----------|--------|-------------|
-| `connection.terminal_state` | ▢ | ▢ |
-| `terminal_state.positions` | ▢ | ▢ |
-| `terminal_state.orders` | ▢ | ▢ |
-| `terminal_state.account_information` | ▢ | ▢ (note equity / balance fields) |
-| `terminal_state.connected` | ▢ | ▢ |
-
-**Key position fields observed (for EXE-06 rehydration):**
-```
-▢
-```
-
----
-
-## 6. Reconnection Behaviour (RISK-02)
-
-| Question | RESEARCH prediction | Observed |
-|----------|---------------------|----------|
-| `on_disconnected()` callback fires on network loss? | Yes | ▢ |
-| `on_connected()` callback fires on reconnect? | Yes | ▢ |
-| Missed ticks replayed after reconnect? | NO (RISK-02) | ▢ |
-| Missed ticks window (if any replay): | 0 s | ▢ |
-| `on_synchronization_started()` fires on reconnect? | Yes | ▢ |
-| Time to reconnect (observed): | unknown | ▢ s |
-
-**RISK-02 verdict:** ▢ CONFIRMED / ▢ REFUTED (explain):
-
----
-
-## 7. Deviations from RESEARCH / Plan Assumptions
-
-List any SDK behaviour that differed from what plan 01-09 assumed:
-
-1. ▢
-2. ▢
-3. ▢
-
----
-
-## 8. Recommended Adaptations for Plan 10 (BrokerPort / MetaAPIAdapter)
-
-Based on the findings above, note any design changes plan 10 should incorporate:
-
-1. ▢
-2. ▢
-3. ▢
-
----
-
-*Filled by: ____________  Date: ____________  MetaAPI account type: ▢ DEMO / ▢ LIVE*
+> These are confirmation-only; the method surface above is sufficient to build 01-10. Re-run `python -m backend.broker.poc_metaapi` after topping up the MetaApi account (and set POC_SYMBOL/POC_VOLUME) to capture the live payloads.
