@@ -27,6 +27,10 @@ export default [
     rules: {
       ...tsPlugin.configs.recommended.rules,
       ...reactHooks.configs.recommended.rules,
+      // TypeScript handles undefined-variable checking; core no-undef is a
+      // false-positive source in TS (e.g. the `React` type namespace) and is
+      // disabled per typescript-eslint guidance.
+      'no-undef': 'off',
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/no-explicit-any': 'warn',
     },
