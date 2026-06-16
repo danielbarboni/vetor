@@ -9,7 +9,7 @@ All datetime comparisons use zoneinfo America/Sao_Paulo (Pitfall 6).
 from __future__ import annotations
 
 import logging
-from datetime import datetime, time as dt_time
+from datetime import date, datetime, time as dt_time
 from zoneinfo import ZoneInfo
 
 logger = logging.getLogger(__name__)

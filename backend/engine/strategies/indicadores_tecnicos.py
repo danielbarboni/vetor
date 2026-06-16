@@ -16,9 +16,8 @@ reset_state() clears ALL in-memory indicator state (RISK-02 reconnect).
 from __future__ import annotations
 
 import math
-from collections import deque
 from datetime import datetime, date
-from typing import Any, Deque, Dict, List, Literal, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 from engine.strategy_base import Signal, StrategyBase
 from strategies.it_params_schema import (
@@ -631,12 +630,12 @@ class Bollinger:
 
         if cfg.forma_uso == FormaUsoBollingerEnum.cruzamento:
             if self._prev_price is not None and self._prev_upper is not None:
-                if self._prev_price <= self._prev_upper and price > upper:
+                if self._prev_price < self._prev_upper and price >= upper:
                     signal = "buy"
-                elif self._prev_price >= self._prev_lower and price < lower:
+                elif self._prev_price > self._prev_lower and price <= lower:
                     signal = "sell"
         elif cfg.forma_uso == FormaUsoBollingerEnum.preco_acima_abaixo_banda:
-            signal = "buy" if price > upper else ("sell" if price < lower else None)
+            signal = "buy" if price >= upper else ("sell" if price <= lower else None)
 
         self._prev_price = price
         self._prev_upper = upper
@@ -828,11 +827,11 @@ class OBV:
         if obv_ma is None:
             return None
 
-        # Upper/lower band around OBV MA
+        # Band around OBV MA (computed but used implicitly via obv vs obv_ma comparison)
         recent = self._obv_vals[-n:]
-        std = math.sqrt(sum((x - obv_ma) ** 2 for x in recent) / len(recent))
-        upper = obv_ma + mult * std
-        lower = obv_ma - mult * std
+        _std = math.sqrt(sum((x - obv_ma) ** 2 for x in recent) / len(recent))
+        _upper = obv_ma + mult * _std  # noqa: F841 — reserved for future band-pierce signal
+        _lower = obv_ma - mult * _std  # noqa: F841
 
         signal: Signal = None
         cur_dir = "up" if self._obv > obv_ma else ("down" if self._obv < obv_ma else None)
@@ -944,14 +943,14 @@ class PontosPivot:
         self._levels.clear()
         self._day = None
 
-    def _compute_levels(self, h: float, l: float, c: float) -> Dict[str, float]:
-        p = (h + l + c) / 3.0
+    def _compute_levels(self, h: float, lo: float, c: float) -> Dict[str, float]:
+        p = (h + lo + c) / 3.0
         return {
             "P":  p,
-            "R1": 2 * p - l,
-            "R2": p + (h - l),
+            "R1": 2 * p - lo,
+            "R2": p + (h - lo),
             "S1": 2 * p - h,
-            "S2": p - (h - l),
+            "S2": p - (h - lo),
         }
 
     def update(self, candle: Candle, cfg) -> Signal:
