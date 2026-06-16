@@ -13,6 +13,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from config import settings
 from routers.robots import router as robots_router
+from routers.auth import router as auth_router
 
 app = FastAPI(
     title="Vetor Trading Platform API",
@@ -44,10 +45,8 @@ async def health() -> dict:
 # Each router is imported and included once its plan is complete.
 # Commented-out stubs document the intended route surface.
 
-# from routers.auth import router as auth_router
-# app.include_router(auth_router, prefix="/auth", tags=["auth"])
-
 app.include_router(robots_router, prefix="/robots", tags=["robots"])
+app.include_router(auth_router, prefix="/account", tags=["auth"])
 
 # from routers.execution import router as execution_router
 # app.include_router(execution_router, prefix="/robots", tags=["execution"])
