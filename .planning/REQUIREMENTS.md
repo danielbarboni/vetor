@@ -29,12 +29,12 @@
 
 ### Robot Creation Wizard (WIZ)
 
-- [ ] **WIZ-01**: Step 1 — Strategy: catalog of strategy templates with text search; each item shows name, author, "Saiba Mais" modal, and "+" to select
-- [ ] **WIZ-02**: Catalog shows all 7 strategy types (list-only in Phase 1; only IT [Tangram 3.0] is fully editable after wizard)
-- [ ] **WIZ-03**: Step 2 — Mode: selection between Modo Simulado and Modo Real (Modo Real requires linked broker account and eligible plan)
-- [ ] **WIZ-04**: Step 3 — Asset: market selection (BM&F) and asset code via chips (WIN% / WDO% / BIT%)
-- [ ] **WIZ-05**: Step 4 — Configure: Robot name (required, unique per account), selected strategy display, Simulation Capital (default R$5,000.00; only in Simulado). "Avançar" enabled only with valid fields
-- [ ] **WIZ-06**: On completion, robot created in "parado/rascunho" state; redirect to `/robos/{id}/parametros`
+- [x] **WIZ-01**: Step 1 — Strategy: catalog of strategy templates with text search; each item shows name, author, "Saiba Mais" modal, and "+" to select
+- [x] **WIZ-02**: Catalog shows all 7 strategy types (list-only in Phase 1; only IT [Tangram 3.0] is fully editable after wizard)
+- [x] **WIZ-03**: Step 2 — Mode: selection between Modo Simulado and Modo Real (Modo Real requires linked broker account and eligible plan)
+- [x] **WIZ-04**: Step 3 — Asset: market selection (BM&F) and asset code via chips (WIN% / WDO% / BIT%)
+- [x] **WIZ-05**: Step 4 — Configure: Robot name (required, unique per account), selected strategy display, Simulation Capital (default R$5,000.00; only in Simulado). "Avançar" enabled only with valid fields
+- [x] **WIZ-06**: On completion, robot created in "parado/rascunho" state; redirect to `/robos/{id}/parametros`
 
 ### Robot Editor — Indicadores Técnicos [Tangram 3.0] (EDT)
 
