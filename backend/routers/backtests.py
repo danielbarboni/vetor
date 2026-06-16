@@ -22,7 +22,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from auth.jwt_guard import get_current_user
 from db.backtest_repo import BacktestRepo, InsufficientCreditsError
 from db.supabase_client import supabase
-from db.models import BacktestCreate, BacktestOut
+from db.models import BacktestCreate
 
 logger = logging.getLogger(__name__)
 

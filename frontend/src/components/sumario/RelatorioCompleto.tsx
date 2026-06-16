@@ -8,10 +8,10 @@
  */
 
 import { useState } from 'react'
-import type { RelatorioCompleto } from '@/lib/api'
+import type { RelatorioCompleto as RelatorioCompletoData } from '@/lib/api'
 
 interface RelatorioCompletoProps {
-  relatorio: RelatorioCompleto
+  relatorio: RelatorioCompletoData
 }
 
 function fmtBrl(val: number | null | undefined): string {

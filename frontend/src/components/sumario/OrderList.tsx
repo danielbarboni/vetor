@@ -65,7 +65,7 @@ function fmtDate(iso: string | null): string {
 function fmtBrl(val: number | null | undefined): string {
   if (val == null) return '—'
   const sign = val < 0 ? '-' : val > 0 ? '+' : ''
-  return `${sign}R$ ${Math.abs(val).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+  return `${sign}R$ ${Math.abs(val).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
 }
 
 function fmtPrice(val: number | null | undefined): string {

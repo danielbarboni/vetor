@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from datetime import datetime, timezone, timedelta
 from typing import Any, Dict, List
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 import pytest
 
 # ─── helpers ─────────────────────────────────────────────────────────────────
@@ -72,19 +72,19 @@ def test_metrics_parity():
         f"sumario={sumario_result['net_return']}"
     )
     assert backtest_result["patrimonio"] == sumario_result["patrimonio"], (
-        f"patrimonio mismatch"
+        "patrimonio mismatch"
     )
     assert backtest_result["number_of_trades"] == sumario_result["number_of_trades"], (
-        f"number_of_trades mismatch"
+        "number_of_trades mismatch"
     )
     assert backtest_result["profitable_pct"] == sumario_result["profitable_pct"], (
-        f"profitable_pct mismatch"
+        "profitable_pct mismatch"
     )
     assert backtest_result["profit_factor"] == sumario_result["profit_factor"], (
-        f"profit_factor mismatch"
+        "profit_factor mismatch"
     )
     assert backtest_result["max_drawdown"] == sumario_result["max_drawdown"], (
-        f"max_drawdown mismatch"
+        "max_drawdown mismatch"
     )
 
 
@@ -190,7 +190,7 @@ def test_credit_decrement_rejects_when_no_credits_row():
 
 # ─── Pitfall 4 lookahead guard ────────────────────────────────────────────
 
-def _make_bars_list(rows: List[Dict[str, Any]]) -> "BarsList":
+def _make_bars_list(rows: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
     Lightweight list-of-dicts bar sequence that the BacktestRunner accepts
     without requiring pandas (avoids ModuleNotFoundError in test env).
