@@ -178,12 +178,13 @@ async def run_poc() -> None:
         # In v29 it may be: account.deploy(), account.wait_deployed() — check.
         log.info("Account state: %s", account.state)
         if account.state not in ("DEPLOYED", "DEPLOYING"):
-            log.info("Deploying account …")
-            await account.deploy()  # NOTE: verify method name in v29
+            log.info("Deploying account … (requires a positive MetaApi balance)")
+            await account.deploy()
 
-        log.info("Waiting for synchronisation …")
-        await account.wait_synchronized({"applicationPattern": ".*", "synchronizationId": None})  # NOTE: verify kwargs
-        log.info("[1/6] Synchronised OK. Connection type: %s", getattr(account, "connection_type", "unknown"))
+        log.info("Waiting for deploy + broker connection (can take a few minutes) …")
+        await account.wait_deployed()
+        await account.wait_connected()
+        log.info("[1/6] Account DEPLOYED + CONNECTED OK. State: %s", account.state)
     except Exception:
         log.exception("[1/6] FAILED during connect/sync — aborting")
         raise
@@ -232,13 +233,17 @@ async def run_poc() -> None:
         #   positions = terminal_state.positions
         #   orders = terminal_state.orders
         # Or async: await connection.get_positions()
-        positions = await connection.get_positions()  # NOTE: verify
-        log.info("[3/6] get_positions() — count=%d", len(positions))
+        # Streaming connection exposes live positions/orders via terminal_state.
+        # (The RPC connection — account.get_rpc_connection() — has async
+        #  get_positions()/get_orders(); that is what the engine uses for EXE-06 rehydration.)
+        ts = connection.terminal_state
+        positions = ts.positions
+        log.info("[3/6] terminal_state.positions — count=%d", len(positions))
         for i, pos in enumerate(positions[:3]):
             log.info("  position[%d]: %s", i, json.dumps(pos, default=str))
 
-        orders = await connection.get_orders()  # NOTE: verify
-        log.info("[3/6] get_orders() — count=%d", len(orders))
+        orders = ts.orders
+        log.info("[3/6] terminal_state.orders — count=%d", len(orders))
         for i, ord_ in enumerate(orders[:3]):
             log.info("  order[%d]: %s", i, json.dumps(ord_, default=str))
 
@@ -260,8 +265,8 @@ async def run_poc() -> None:
             SYMBOL,
             ORDER_VOLUME,
             options={
-                "comment": ORDER_COMMENT,  # NOTE: confirm 'comment' accepted
-                "clientOrderId": ORDER_CLIENT_ID,  # NOTE: confirm 'clientOrderId' accepted
+                "comment": ORDER_COMMENT,
+                "clientId": ORDER_CLIENT_ID,  # MetaApi idempotency tag (CreateMarketTradeOptions)
             },
         )
         log.info("[4/6] Order result: %s", json.dumps(result, default=str))
@@ -273,7 +278,7 @@ async def run_poc() -> None:
             close_result = await connection.create_market_sell_order(  # NOTE: verify
                 SYMBOL,
                 ORDER_VOLUME,
-                options={"comment": f"close_{ORDER_COMMENT}", "clientOrderId": f"{ORDER_CLIENT_ID}-close"},
+                options={"comment": f"close_{ORDER_COMMENT}", "clientId": f"{ORDER_CLIENT_ID}-cl"},
             )
             log.info("[4/6] Close result: %s", json.dumps(close_result, default=str))
         else:
@@ -311,13 +316,24 @@ async def run_poc() -> None:
     # ── Teardown ─────────────────────────────────────────────────────────────
     log.info("\n── Teardown ──")
     try:
-        await connection.unsubscribe_from_market_data(  # NOTE: verify method name
+        await connection.unsubscribe_from_market_data(
             SYMBOL,
-            [{"type": "quotes"}, {"type": "ticks"}],  # NOTE: confirm
+            [{"type": "quotes"}, {"type": "ticks"}],
         )
-        await connection.close()  # NOTE: verify method name
+        await connection.close()
     except Exception:
-        log.warning("Error during teardown (non-fatal): %s", exc_info=True)
+        log.warning("Error during teardown (non-fatal)", exc_info=True)
+
+    # Cost safety: undeploy so the account stops consuming MetaApi balance.
+    try:
+        log.info("Undeploying account to stop hourly charges …")
+        await account.undeploy()
+        log.info("Account undeployed. (Re-deploy happens automatically on the next run.)")
+    except Exception:
+        log.warning(
+            "Could not undeploy — UNDEPLOY MANUALLY in the MetaApi dashboard to avoid ongoing charges.",
+            exc_info=True,
+        )
 
     log.info("=== PoC complete. Fill docs/metaapi-poc-findings.md with findings. ===")
 
