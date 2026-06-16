@@ -46,3 +46,6 @@ backend/htmlcov/
 backend/.ruff_cache/
 
 # GitHub Actions cache
+
+# WSL download metadata artifacts
+*:Zone.Identifier

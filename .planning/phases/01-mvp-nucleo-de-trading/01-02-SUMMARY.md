@@ -209,3 +209,14 @@ None — plan executed as written for Tasks 1 and 2. Task 3 intentionally deferr
 | supabase/seed/b3_contracts_2026_2027.sql | FOUND |
 | Commit ec28cab (Task 1) | FOUND |
 | Commit 181adb8 (Task 2) | FOUND |
+
+---
+
+## UPDATE 2026-06-16 — Checkpoint CLEARED (apply + smoke test done)
+
+The deferred Task 3 checkpoint is now complete. Migrations 0001/0002/0003 + B3 seed
+were applied to the `vetor-dev` Supabase project via `psql` (Session pooler, IPv4).
+Verified: 11 tables, RLS on all, Realtime publication (`robots`/`orders`/`backtests`),
+B3 front-month = WINM26/WDOM26/BITM26 (1 per asset). RLS isolation smoke test **PASSED**
+(each user sees only their own rows; anon sees none) — see `docs/realtime-rls-smoke-test.md`.
+Plan 01-02 is COMPLETE. Wave 1+ unblocked.
