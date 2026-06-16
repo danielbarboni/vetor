@@ -21,6 +21,7 @@ from routers.robots import router as robots_router
 from routers.auth import router as auth_router
 from routers.conta import router as conta_router
 from routers.execution import router as execution_router  # noqa: E402
+from routers.sumario import router as sumario_router
 from tick_ws.ws_manager import manager as ws_manager
 
 logger = logging.getLogger(__name__)
@@ -150,3 +151,4 @@ app.include_router(robots_router, prefix="/robots", tags=["robots"])
 app.include_router(auth_router, prefix="/account", tags=["auth"])
 app.include_router(conta_router, prefix="/account", tags=["account"])
 app.include_router(execution_router, prefix="/robots", tags=["execution"])
+app.include_router(sumario_router, prefix="/robots", tags=["sumario"])
