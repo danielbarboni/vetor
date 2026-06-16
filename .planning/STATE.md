@@ -3,9 +3,9 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: "Phase 01, Plan 03 complete — FastAPI backend scaffold, JWT guard, pytest harness, CI"
-last_updated: "2026-06-16T15:30:00.000Z"
-last_activity: 2026-06-16 -- Plan 01-03 complete (backend foundation + Nyquist harness + CI workflow)
+stopped_at: "Phase 01, Plan 02 — schema + seed AUTHORED; Task 3 (apply+smoke-test) BLOCKED pending Supabase project"
+last_updated: "2026-06-16T16:00:00.000Z"
+last_activity: 2026-06-16 -- Plan 01-02 Tasks 1+2 complete (schema/RLS/Realtime/B3 seed); Task 3 deferred (no Supabase project yet)
 progress:
   total_phases: 3
   completed_phases: 0
@@ -28,7 +28,7 @@ See: .planning/PROJECT.md (updated 2026-06-15)
 Phase: 01 (mvp-nucleo-de-trading) — EXECUTING
 Plan: 4 of 13
 Status: Executing Phase 01
-Last activity: 2026-06-16 -- Plan 01-03 complete (FastAPI backend scaffold, JWT guard, pytest harness, CI)
+Last activity: 2026-06-16 -- Plan 01-02 Tasks 1+2 authored (schema/RLS/Realtime/B3 seed); Task 3 BLOCKED on Supabase apply
 
 Progress: [██░░░░░░░░] 23%
 
@@ -63,6 +63,14 @@ Key decisions from Plan 01-01:
 - palettes.d.ts added to blue-hour-design-system/ for TypeScript module declarations
 - Sora 700 used for logo mark (README.md binding loads only 600/700, not 800)
 
+Key decisions from Plan 01-02:
+- WIN%/WDO% expiry = Wednesday nearest 15th of even-month (B3 mini-futures rule)
+- BIT% expiry = 3rd Friday of every month (all 12 months)
+- Rollover = T-5 business days before expiry (Mon-Fri, no holiday correction in seed)
+- Front months (2026-06-16): WINM26/WDOM26 (2026-06-17), BITM26 (2026-06-19)
+- order_events RLS uses subquery on orders (table has no direct user_id column)
+- user_credits writes restricted to service role only
+
 Key decisions from Plan 01-03:
 - JWT guard fails closed (503) when SUPABASE_JWT_SECRET absent — distinguishes misconfiguration from bad token
 - CORS allowlist driven by settings.cors_origins_list (comma-split) — never wildcard
@@ -71,14 +79,15 @@ Key decisions from Plan 01-03:
 
 ### Pending Todos
 
-None yet.
+- Plan 01-02 Task 3: user must create Supabase project, apply 3 migrations, load B3 seed, run RLS+Realtime smoke test, then signal "approved" to unblock Wave 2+.
 
 ### Blockers/Concerns
 
+- BLOCKING: Plan 01-02 Task 3 not yet executed — no Supabase project exists. Plans 05/10/11/12/13 and all Wave 2+ plans cannot begin until migrations applied and smoke test passes.
 - 3 of 7 strategy editors (Tangram, Fibonacci, RenkoBot) incomplete in prototype — need PRD spec completion before implementing in production. Phase 1 only requires Indicadores Técnicos [Tangram 3.0].
 
 ## Session Continuity
 
 Last session: 2026-06-16
-Stopped at: Plan 01-03 complete — FastAPI backend scaffold, JWT guard, 14-xfail pytest harness, CI workflow
-Resume file: .planning/phases/01-mvp-nucleo-de-trading/01-04-PLAN.md
+Stopped at: Plan 01-02 Tasks 1+2 authored — awaiting Supabase project creation and Task 3 smoke test
+Resume file: .planning/phases/01-mvp-nucleo-de-trading/01-02-PLAN.md (Task 3 checkpoint)
