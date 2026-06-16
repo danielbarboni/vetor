@@ -6,7 +6,7 @@ Three-phase journey from a focused MVP for the owner's personal B3 trading to a 
 
 ## Phases
 
-- [ ] **Phase 1: MVP — Núcleo de Trading** - Authentication, robot management, MetaAPI B3 execution, robot report, individual backtests, account management
+- [x] **Phase 1: MVP — Núcleo de Trading** - Authentication, robot management, MetaAPI B3 execution, robot report, individual backtests, account management (completed 2026-06-16)
 - [ ] **Phase 2: Completude do Produto Core** - Dashboard, IBKR/CME, mass backtests, credit purchase, ranking, portfolio, chart screen
 - [ ] **Phase 3: Ecossistema e Marketplace** - SmartStore, SmarttPlay, Ranking, Portfolio, Manager admin
 
@@ -65,6 +65,6 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. MVP — Núcleo de Trading | 0/TBD | Not started | - |
+| 1. MVP — Núcleo de Trading | 13/13 | Complete   | 2026-06-16 |
 | 2. Completude do Produto Core | 0/TBD | Not started | - |
 | 3. Ecossistema e Marketplace | 0/TBD | Not started | - |

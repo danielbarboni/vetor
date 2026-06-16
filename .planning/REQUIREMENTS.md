@@ -19,22 +19,22 @@
 
 ### Robot Listing (ROB)
 
-- [ ] **ROB-01**: User sees robots organized in three tabs by state: EXECUTANDO, PARADOS, ARQUIVADOS
-- [ ] **ROB-02**: Each robot displayed as a card showing: #id, asset code, simulator badge (Pessimista/Moderado/Otimista), robot name, strategy type, sparkline equity curve with date axis, position status, Net Return (green/red), Daily Balance
-- [ ] **ROB-03**: Each card has: "MAIS INFO" accordion expander, ⋮ context menu, primary control button (Parar/Iniciar/Restaurar)
-- [ ] **ROB-04**: "MAIS INFO" expands to show: Number of trades, Profitable trades (%), Profit factor, Max drawdown (%)
+- [x] **ROB-01**: User sees robots organized in three tabs by state: EXECUTANDO, PARADOS, ARQUIVADOS
+- [x] **ROB-02**: Each robot displayed as a card showing: #id, asset code, simulator badge (Pessimista/Moderado/Otimista), robot name, strategy type, sparkline equity curve with date axis, position status, Net Return (green/red), Daily Balance
+- [x] **ROB-03**: Each card has: "MAIS INFO" accordion expander, ⋮ context menu, primary control button (Parar/Iniciar/Restaurar)
+- [x] **ROB-04**: "MAIS INFO" expands to show: Number of trades, Profitable trades (%), Profit factor, Max drawdown (%)
 - [ ] **ROB-05**: ⋮ context menu actions per robot state (Ver Sumário, Editar parâmetros, Iniciar, Pausar/Parar, Arquivar, Desarquivar, Excluir, Criar backtest, Duplicar) — available actions vary by state
-- [ ] **ROB-06**: Filters by strategy (multi-select dropdown), by "Robôs Posicionados"; grid/list toggle; search by name
-- [ ] **ROB-07**: "CRIAR ROBÔ" button launches the wizard
+- [x] **ROB-06**: Filters by strategy (multi-select dropdown), by "Robôs Posicionados"; grid/list toggle; search by name
+- [x] **ROB-07**: "CRIAR ROBÔ" button launches the wizard
 
 ### Robot Creation Wizard (WIZ)
 
-- [ ] **WIZ-01**: Step 1 — Strategy: catalog of strategy templates with text search; each item shows name, author, "Saiba Mais" modal, and "+" to select
-- [ ] **WIZ-02**: Catalog shows all 7 strategy types (list-only in Phase 1; only IT [Tangram 3.0] is fully editable after wizard)
-- [ ] **WIZ-03**: Step 2 — Mode: selection between Modo Simulado and Modo Real (Modo Real requires linked broker account and eligible plan)
-- [ ] **WIZ-04**: Step 3 — Asset: market selection (BM&F) and asset code via chips (WIN% / WDO% / BIT%)
-- [ ] **WIZ-05**: Step 4 — Configure: Robot name (required, unique per account), selected strategy display, Simulation Capital (default R$5,000.00; only in Simulado). "Avançar" enabled only with valid fields
-- [ ] **WIZ-06**: On completion, robot created in "parado/rascunho" state; redirect to `/robos/{id}/parametros`
+- [x] **WIZ-01**: Step 1 — Strategy: catalog of strategy templates with text search; each item shows name, author, "Saiba Mais" modal, and "+" to select
+- [x] **WIZ-02**: Catalog shows all 7 strategy types (list-only in Phase 1; only IT [Tangram 3.0] is fully editable after wizard)
+- [x] **WIZ-03**: Step 2 — Mode: selection between Modo Simulado and Modo Real (Modo Real requires linked broker account and eligible plan)
+- [x] **WIZ-04**: Step 3 — Asset: market selection (BM&F) and asset code via chips (WIN% / WDO% / BIT%)
+- [x] **WIZ-05**: Step 4 — Configure: Robot name (required, unique per account), selected strategy display, Simulation Capital (default R$5,000.00; only in Simulado). "Avançar" enabled only with valid fields
+- [x] **WIZ-06**: On completion, robot created in "parado/rascunho" state; redirect to `/robos/{id}/parametros`
 
 ### Robot Editor — Indicadores Técnicos [Tangram 3.0] (EDT)
 
@@ -45,27 +45,27 @@
 
 ### Robot Execution (EXE)
 
-- [ ] **EXE-01**: Start execution only with valid and saved parameters; transition to Executando state with green badge
-- [ ] **EXE-02**: Stop execution: cancels pending orders; asks whether to close open position
-- [ ] **EXE-03**: Modo Simulado: fills orders using configurable policy per robot (Pessimista by default; Moderado and Otimista available); badge shown on card and report
-- [ ] **EXE-04**: Resolve continuous contract suffix (%) to current expiry; perform automatic rollover; record effective contract per order (e.g., WDOF26)
-- [ ] **EXE-05**: Persist all orders with: timestamp, price, quantity, type (market/limit), status (filled/cancelled/rejected/expired), entry/exit classification
-- [ ] **EXE-06**: Recovery after failure: engine rehydrates robot position state without duplicating orders (idempotency)
+- [x] **EXE-01**: Start execution only with valid and saved parameters; transition to Executando state with green badge
+- [x] **EXE-02**: Stop execution: cancels pending orders; asks whether to close open position
+- [x] **EXE-03**: Modo Simulado: fills orders using configurable policy per robot (Pessimista by default; Moderado and Otimista available); badge shown on card and report
+- [x] **EXE-04**: Resolve continuous contract suffix (%) to current expiry; perform automatic rollover; record effective contract per order (e.g., WDOF26)
+- [x] **EXE-05**: Persist all orders with: timestamp, price, quantity, type (market/limit), status (filled/cancelled/rejected/expired), entry/exit classification
+- [x] **EXE-06**: Recovery after failure: engine rehydrates robot position state without duplicating orders (idempotency)
 
 ### Robot Report — Sumário (SUM)
 
-- [ ] **SUM-01**: Report header with: robot name, strategy, asset, current contract, simulator badge, "Último salvar" timestamp
-- [ ] **SUM-02**: Metric cards: Net Return, Equity evolution chart (line with tooltip), Asset quote (real-time price + % change), Patrimônio, Current position, Max drawdown, Number of trades, Profitable trades %, Profit factor, Daily balance
-- [ ] **SUM-03**: "RELATÓRIO COMPLETO" expandable accordion with 8 detailed metric cards (Conta, Retorno, Risco, Drawdown, Resumo dos trades, Trades com lucro, Trades com prejuízo, Trades comprados, Trades vendidos)
-- [ ] **SUM-04**: Order list with: date/time, type, direction, quantity, price, status, result; export to CSV
-- [ ] **SUM-05**: Order event modal (ⓘ): detailed event log for each order (#ID, timestamps, prices, fills)
+- [x] **SUM-01**: Report header with: robot name, strategy, asset, current contract, simulator badge, "Último salvar" timestamp
+- [x] **SUM-02**: Metric cards: Net Return, Equity evolution chart (line with tooltip), Asset quote (real-time price + % change), Patrimônio, Current position, Max drawdown, Number of trades, Profitable trades %, Profit factor, Daily balance
+- [x] **SUM-03**: "RELATÓRIO COMPLETO" expandable accordion with 8 detailed metric cards (Conta, Retorno, Risco, Drawdown, Resumo dos trades, Trades com lucro, Trades com prejuízo, Trades comprados, Trades vendidos)
+- [x] **SUM-04**: Order list with: date/time, type, direction, quantity, price, status, result; export to CSV
+- [x] **SUM-05**: Order event modal (ⓘ): detailed event log for each order (#ID, timestamps, prices, fills)
 
 ### Backtests — Individual (BCK)
 
-- [ ] **BCK-01**: Individual backtest creation modal (from editor ⓑ icon or robot card ⋮ menu): robot name pre-filled, capital, operational costs profile, backtest type (pessimist/moderate/optimist), start/end date with period shortcuts (1M/3M/6M/1Y/2Y)
-- [ ] **BCK-02**: Available backtest credits displayed (read-only counter); each execution consumes 1 credit
-- [ ] **BCK-03**: Backtest list page: shows all backtests with status (Aguardando/Processando/Concluído/Erro), creation date, period, capital, type
-- [ ] **BCK-04**: Completed backtest report: same metric cards as Sumário + equity curve + order list (read-only, historical)
+- [x] **BCK-01**: Individual backtest creation modal (from editor ⓑ icon or robot card ⋮ menu): robot name pre-filled, capital, operational costs profile, backtest type (pessimist/moderate/optimist), start/end date with period shortcuts (1M/3M/6M/1Y/2Y)
+- [x] **BCK-02**: Available backtest credits displayed (read-only counter); each execution consumes 1 credit
+- [x] **BCK-03**: Backtest list page: shows all backtests with status (Aguardando/Processando/Concluído/Erro), creation date, period, capital, type
+- [x] **BCK-04**: Completed backtest report: same metric cards as Sumário + equity curve + order list (read-only, historical)
 
 ### Minha Conta (CTR) — Phase 1 Tabs
 

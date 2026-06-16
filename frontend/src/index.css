@@ -1,0 +1,130 @@
+/* Blue Hour Design System tokens — generated, never edit manually */
+@import '../../blue-hour-design-system/tokens/tokens.css';
+
+/* Tailwind base layers (token config only — do NOT use utility classes in components) */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   CSS Variable Alias Map — short-form aliases for component use
+   Components use ONLY these aliases (or underlying tokens).
+   Never use hex values in component code.
+   ============================================================ */
+:root {
+  --bg: var(--color-bg);
+  --surface: var(--color-surface);
+  --surface2: var(--color-surface-2);
+  --surface3: color-mix(in srgb, var(--color-surface-2) 86%, var(--color-text-hi) 14%);
+  --border: var(--color-border);
+  --border2: var(--color-border-strong);
+  --text: var(--color-text-hi);
+  --muted: var(--color-text-mid);
+  --muted2: var(--color-text-low);
+  --glow1: var(--tint-primary);
+  --glow2: var(--tint-accent);
+  --seg-on: var(--color-primary);
+  --seg-on-tx: var(--color-on-primary);
+  --knob-off: var(--color-border-strong);
+  --shadow: var(--shadow-card);
+}
+
+/* ============================================================
+   Global base styles
+   ============================================================ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: 14px;
+  color: var(--color-text-hi);
+  background: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  height: 100%;
+}
+
+/* ============================================================
+   Focus ring
+   ============================================================ */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   Custom webkit scrollbar
+   ============================================================ */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface-2);
+  border-radius: 99px;
+  border: 2px solid var(--color-bg);
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ============================================================
+   Animations
+   ============================================================ */
+@keyframes fadeUp {
+  from {
+    transform: translateY(8px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+@keyframes pulseDot {
+  0% {
+    box-shadow: 0 0 0 0 var(--tint-profit);
+  }
+  70% {
+    box-shadow: 0 0 0 8px transparent;
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+@keyframes stripes {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 28px 0;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
