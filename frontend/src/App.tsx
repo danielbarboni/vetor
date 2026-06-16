@@ -13,6 +13,9 @@ import RobotWizard from './pages/robots/RobotWizard'
 // Robot editor (plan 08)
 import RobotEditor from './pages/robots/RobotEditor'
 
+// Minha Conta (plan 13)
+import MinhaConta from './pages/conta/MinhaConta'
+
 // Auth screens
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
@@ -42,15 +45,6 @@ function BacktestsStub() {
   )
 }
 
-function ContaStub() {
-  return (
-    <div style={{ padding: '22px 28px' }}>
-      <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--text)' }}>
-        Minha Conta
-      </h1>
-    </div>
-  )
-}
 
 export default function App() {
   const init = useAuthStore((s) => s.init)
@@ -77,7 +71,7 @@ export default function App() {
           <Route path="/robos/:id/parametros" element={<RobotEditor />} />
           <Route path="/robos/:id/sumario" element={<RoboSumarioStub />} />
           <Route path="/backtests" element={<BacktestsStub />} />
-          <Route path="/conta" element={<ContaStub />} />
+          <Route path="/conta" element={<MinhaConta />} />
           {/* Default redirect */}
           <Route path="/" element={<Navigate to="/robos" replace />} />
           <Route path="*" element={<Navigate to="/robos" replace />} />

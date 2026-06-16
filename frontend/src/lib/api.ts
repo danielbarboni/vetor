@@ -125,3 +125,113 @@ export function startRobot(id: string): Promise<void> {
 export function stopRobot(id: string): Promise<void> {
   return apiFetch<void>(`/robots/${id}/stop`, { method: 'POST' })
 }
+
+// ─── Account / Minha Conta (CTR-01..04) ──────────────────────────────────────
+
+export interface UserProfile {
+  id: string
+  full_name?: string | null
+  phone?: string | null
+  cpf_cnpj?: string | null
+  avatar_url?: string | null
+  created_at?: string | null
+  updated_at?: string | null
+}
+
+export interface UserPreferences {
+  email_notifications_executions: boolean
+  email_notifications_stops: boolean
+  email_notifications_margin: boolean
+  default_simulator_type: string
+  decimal_separator: string
+  thousands_separator: string
+  currency_display: string
+}
+
+export interface BrokerConnection {
+  id: string
+  broker_name: string
+  metaapi_account_id?: string | null
+  status: string
+  created_at?: string | null
+}
+
+export interface SessionEntry {
+  session_id: string
+  created_at: string
+  device: string
+  ip: string
+  is_current: boolean
+}
+
+export interface UserCredits {
+  balance: number
+  updated_at?: string | null
+}
+
+export function getProfile(): Promise<UserProfile> {
+  return apiFetch<UserProfile>('/account/profile')
+}
+
+export function updateProfile(payload: Partial<UserProfile>): Promise<UserProfile> {
+  return apiFetch<UserProfile>('/account/profile', {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+
+export function uploadAvatar(file: File): Promise<UserProfile> {
+  // Avatar upload: POST the file as multipart, then PATCH profile with returned url.
+  // For Phase 1, we skip the Supabase Storage step and send the data URL directly.
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = () => {
+      updateProfile({ avatar_url: reader.result as string }).then(resolve).catch(reject)
+    }
+    reader.onerror = reject
+    reader.readAsDataURL(file)
+  })
+}
+
+export function getPreferences(): Promise<UserPreferences> {
+  return apiFetch<UserPreferences>('/account/preferences')
+}
+
+export function updatePreferences(payload: Partial<UserPreferences>): Promise<UserPreferences> {
+  return apiFetch<UserPreferences>('/account/preferences', {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+}
+
+export function getBrokers(): Promise<BrokerConnection[]> {
+  return apiFetch<BrokerConnection[]>('/account/brokers')
+}
+
+export function linkBroker(payload: {
+  login: string
+  password: string
+  server: string
+  broker_name?: string
+}): Promise<{ metaapi_account_id: string; broker_name: string; status: string }> {
+  return apiFetch('/account/brokers', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
+export function unlinkBroker(connectionId: string): Promise<{ id: string; status: string }> {
+  return apiFetch(`/account/brokers/${connectionId}`, { method: 'DELETE' })
+}
+
+export function getSessions(): Promise<{ sessions: SessionEntry[] }> {
+  return apiFetch<{ sessions: SessionEntry[] }>('/account/sessions')
+}
+
+export function revokeAllSessions(): Promise<{ message: string }> {
+  return apiFetch('/account/sessions/revoke-all', { method: 'POST' })
+}
+
+export function getCredits(): Promise<UserCredits> {
+  return apiFetch<UserCredits>('/account/credits')
+}
