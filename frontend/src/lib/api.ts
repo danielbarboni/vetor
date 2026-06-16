@@ -235,3 +235,155 @@ export function revokeAllSessions(): Promise<{ message: string }> {
 export function getCredits(): Promise<UserCredits> {
   return apiFetch<UserCredits>('/account/credits')
 }
+
+// ─── Sumário (SUM-01..SUM-05) ────────────────────────────────────────────────
+
+export interface RelatorioConta {
+  capital_inicial: number
+  patrimonio_final: number
+  retorno_liquido: number
+  saldo_diario: number
+}
+
+export interface RelatorioRetorno {
+  retorno_liquido_r: number
+  retorno_pct: number
+  lucro_bruto: number
+  prejuizo_bruto: number
+  fator_de_lucro: number | null
+  saldo_diario: number
+}
+
+export interface RelatorioRisco {
+  drawdown_maximo_r: number
+  drawdown_maximo_pct: number
+  maior_ganho: number
+  maior_perda: number
+}
+
+export interface RelatorioResumoTrades {
+  total_trades: number
+  trades_com_lucro: number
+  trades_com_prejuizo: number
+  pct_com_lucro: number | null
+  media_ganho: number
+  media_perda: number
+}
+
+export interface RelatorioTradesGroup {
+  quantidade: number
+  lucro_total?: number
+  prejuizo_total?: number
+  resultado_liquido?: number
+  media?: number
+  maior_ganho?: number
+  maior_perda?: number
+  pct_lucrativos?: number
+  vencedores?: number
+  perdedores?: number
+}
+
+export interface RelatorioCompleto {
+  conta: RelatorioConta
+  retorno: RelatorioRetorno
+  risco: RelatorioRisco
+  resumo_trades: RelatorioResumoTrades
+  trades_lucro: RelatorioTradesGroup
+  trades_prejuizo: RelatorioTradesGroup
+  trades_comprados: RelatorioTradesGroup
+  trades_vendidos: RelatorioTradesGroup
+}
+
+export interface SumarioMetrics {
+  net_return: number
+  patrimonio: number
+  max_drawdown: { abs: number; pct: number }
+  number_of_trades: number
+  profitable_pct: number | null
+  profit_factor: number | null
+  daily_balance: number
+  relatorio: RelatorioCompleto
+}
+
+export interface SumarioResponse extends SumarioMetrics {
+  id: string
+  name: string
+  strategy_type: string
+  asset: string
+  mode: string
+  status: string
+  effective_contract: string | null
+  params_saved_at: string | null
+  simulation_capital: number | null
+}
+
+export type SumarioPeriod = 'HOJE' | '7D' | '30D' | 'TUDO'
+
+export interface OrderRow {
+  id: string
+  robot_id: string
+  user_id: string
+  client_order_id: string | null
+  broker_order_id: string | null
+  effective_contract: string
+  side?: string
+  type?: string
+  order_class?: string
+  status: string
+  qty?: number
+  price: number | null
+  filled_price: number | null
+  result?: number | null
+  created_at: string
+  filled_at: string | null
+}
+
+export interface OrdersResponse {
+  orders: OrderRow[]
+  page: number
+  page_size: number
+  count: number
+}
+
+export interface OrderEvent {
+  id: string
+  order_id: string
+  event_type: string
+  payload: Record<string, unknown>
+  created_at: string
+}
+
+export interface OrderEventsResponse {
+  order_id: string
+  events: OrderEvent[]
+}
+
+export interface EquityResponse {
+  capital: number
+  series: Array<[number, number]>
+}
+
+export function getRobotSumario(id: string, period: SumarioPeriod = 'TUDO'): Promise<SumarioResponse> {
+  return apiFetch<SumarioResponse>(`/robots/${id}/sumario?period=${period}`)
+}
+
+export function getRobotOrders(
+  id: string,
+  opts?: { status?: string; period?: SumarioPeriod; page?: number; page_size?: number },
+): Promise<OrdersResponse> {
+  const params = new URLSearchParams()
+  if (opts?.status) params.set('status', opts.status)
+  if (opts?.period) params.set('period', opts.period)
+  if (opts?.page) params.set('page', String(opts.page))
+  if (opts?.page_size) params.set('page_size', String(opts.page_size))
+  const qs = params.toString() ? `?${params}` : ''
+  return apiFetch<OrdersResponse>(`/robots/${id}/orders${qs}`)
+}
+
+export function getOrderEvents(robotId: string, orderId: string): Promise<OrderEventsResponse> {
+  return apiFetch<OrderEventsResponse>(`/robots/${robotId}/orders/${orderId}/events`)
+}
+
+export function getRobotEquity(id: string, period: SumarioPeriod = 'TUDO'): Promise<EquityResponse> {
+  return apiFetch<EquityResponse>(`/robots/${id}/equity?period=${period}`)
+}

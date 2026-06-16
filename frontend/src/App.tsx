@@ -16,6 +16,9 @@ import RobotEditor from './pages/robots/RobotEditor'
 // Minha Conta (plan 13)
 import MinhaConta from './pages/conta/MinhaConta'
 
+// Robot Sumário (plan 11)
+import RobotSumario from './pages/sumario/RobotSumario'
+
 // Auth screens
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
@@ -24,16 +27,6 @@ import AuthCallback from './pages/auth/AuthCallback'
 import AccountSelector from './pages/auth/AccountSelector'
 
 // Route stub pages — each will be implemented in later plans
-
-function RoboSumarioStub() {
-  return (
-    <div style={{ padding: '22px 28px' }}>
-      <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--text)' }}>
-        Sumário do Robô
-      </h1>
-    </div>
-  )
-}
 
 function BacktestsStub() {
   return (
@@ -69,7 +62,7 @@ export default function App() {
           <Route path="/robos" element={<RobotList />} />
           <Route path="/robos/wizard" element={<RobotWizard />} />
           <Route path="/robos/:id/parametros" element={<RobotEditor />} />
-          <Route path="/robos/:id/sumario" element={<RoboSumarioStub />} />
+          <Route path="/robos/:id/sumario" element={<RobotSumario />} />
           <Route path="/backtests" element={<BacktestsStub />} />
           <Route path="/conta" element={<MinhaConta />} />
           {/* Default redirect */}
