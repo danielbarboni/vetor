@@ -10,6 +10,9 @@ import RobotList from './pages/robots/RobotList'
 // Robot wizard
 import RobotWizard from './pages/robots/RobotWizard'
 
+// Robot editor (plan 08)
+import RobotEditor from './pages/robots/RobotEditor'
+
 // Auth screens
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
@@ -18,15 +21,6 @@ import AuthCallback from './pages/auth/AuthCallback'
 import AccountSelector from './pages/auth/AccountSelector'
 
 // Route stub pages — each will be implemented in later plans
-function RoboParametrosStub() {
-  return (
-    <div style={{ padding: '22px 28px' }}>
-      <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--text)' }}>
-        Parâmetros do Robô
-      </h1>
-    </div>
-  )
-}
 
 function RoboSumarioStub() {
   return (
@@ -80,7 +74,7 @@ export default function App() {
         <Route element={<AppShell />}>
           <Route path="/robos" element={<RobotList />} />
           <Route path="/robos/wizard" element={<RobotWizard />} />
-          <Route path="/robos/:id/parametros" element={<RoboParametrosStub />} />
+          <Route path="/robos/:id/parametros" element={<RobotEditor />} />
           <Route path="/robos/:id/sumario" element={<RoboSumarioStub />} />
           <Route path="/backtests" element={<BacktestsStub />} />
           <Route path="/conta" element={<ContaStub />} />
