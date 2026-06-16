@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: "Phase 01, Plan 05 — Robot CRUD + lifecycle API complete"
-last_updated: "2026-06-16T17:00:00.000Z"
-last_activity: 2026-06-16 -- Plan 01-05 complete: robots router (8 endpoints) + robot_repo + models; pytest green; ruff clean
+stopped_at: "Phase 01, Plan 04 — Auth layer complete (store + screens + backend sessions)"
+last_updated: "2026-06-16T18:13:00.000Z"
+last_activity: 2026-06-16 -- Plan 01-04 complete: auth store + 5 screens + RequireAuth + /account/sessions; 48 vitest green; ruff clean
 progress:
   total_phases: 3
   completed_phases: 0
   total_plans: 13
-  completed_plans: 4
-  percent: 31
+  completed_plans: 5
+  percent: 38
 ---
 
 # Project State
@@ -26,25 +26,25 @@ See: .planning/PROJECT.md (updated 2026-06-15)
 ## Current Position
 
 Phase: 01 (mvp-nucleo-de-trading) — EXECUTING
-Plan: 5 of 13 (complete)
+Plan: 4 of 13 (complete); Plan 5 of 13 (complete)
 Status: Executing Phase 01
-Last activity: 2026-06-16 -- Plan 01-05 complete: Robot CRUD + lifecycle API
+Last activity: 2026-06-16 -- Plan 01-04 complete: auth store + RequireAuth + 5 auth screens + /account/sessions endpoints
 
-Progress: [███░░░░░░░] 31%
+Progress: [████░░░░░░] 38%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 3
-- Average duration: ~32 min
-- Total execution time: ~95 min
+- Total plans completed: 5
+- Average duration: ~25 min
+- Total execution time: ~145 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01 — mvp-nucleo-de-trading | 4/13 | ~135 min | ~34 min |
+| 01 — mvp-nucleo-de-trading | 5/13 | ~145 min | ~29 min |
 
 ## Accumulated Context
 
@@ -77,6 +77,13 @@ Key decisions from Plan 01-03:
 - ruff installed separately in CI (not in requirements.txt) — matches plan spec
 - asyncio_default_fixture_loop_scope=function in pytest.ini — suppresses pytest-asyncio 0.25.3 deprecation warning
 
+Key decisions from Plan 01-04:
+- vi.hoisted() required for Vitest mock fns — vi.mock() is hoisted before const declarations
+- HTTPBearer returns 401 (not 403) on missing Authorization header — tests assert in (401, 403)
+- AccountSelector auto-skips to /robos for single-profile users (AUT-05 spec)
+- /account/sessions returns placeholder shape — real impl deferred until Supabase project + migrations exist
+- Auth callback navigates to /auth/select (not /robos) to allow multi-profile future expansion
+
 Key decisions from Plan 01-05:
 - RobotStatus enum extended with 'rascunho' (DB default state, was missing from plan 03 model)
 - Unique-violation detection via exception string inspection ('23505'/'duplicate'/'unique') — Supabase Python SDK raises Exception not a typed error on constraint violation
@@ -95,5 +102,5 @@ Key decisions from Plan 01-05:
 ## Session Continuity
 
 Last session: 2026-06-16
-Stopped at: Plan 01-05 complete — Robot CRUD + lifecycle API (8 endpoints, pytest green, ruff clean)
+Stopped at: Plan 01-04 complete — Auth layer (store + RequireAuth + 5 screens + /account/sessions)
 Resume file: .planning/phases/01-mvp-nucleo-de-trading/01-06-PLAN.md
