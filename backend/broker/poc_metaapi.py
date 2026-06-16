@@ -64,10 +64,10 @@ log = logging.getLogger("poc_metaapi")
 # B3 front-month WIN futures symbol.
 # NOTE: MetaAPI may normalise the symbol differently; at run time verify the
 # exact ticker string returned by account.get_symbols() and update here.
-SYMBOL = "WIN@N"  # NOTE: or "WINM25", "WIN$" — check account symbol list
+SYMBOL = os.environ.get("POC_SYMBOL", "EURUSD")  # MetaQuotes-Demo: EURUSD validates streaming. For BTG set POC_SYMBOL=WIN@N (or resolved WINM26 — check account.get_symbols())
 
 TICK_SAMPLE_COUNT = 20  # Print first N tick events then stop subscribing
-ORDER_VOLUME = 1  # Minimum lot size for B3 mini-contracts
+ORDER_VOLUME = float(os.environ.get("POC_VOLUME", "0.01"))  # 0.01 lot fits forex demos (EURUSD); B3 mini uses 1 contract — set POC_VOLUME=1 for BTG
 ORDER_COMMENT = "poc_vetor_01_09"  # NOTE: confirm 'comment' field supported in v29
 ORDER_CLIENT_ID = "poc-vetor-01-09-001"  # NOTE: confirm 'clientOrderId' field in v29
 
