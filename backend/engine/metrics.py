@@ -239,7 +239,6 @@ def compute_relatorio_completo(
       conta, retorno, risco, resumo_trades,
       trades_lucro, trades_prejuizo, trades_comprados, trades_vendidos
     """
-    filled = [o for o in orders if o.get("status") == "filled"]
     completed = [o for o in orders if _is_completed_trade(o)]
     winners = [o for o in completed if _result_of(o) > 0]
     losers = [o for o in completed if _result_of(o) < 0]

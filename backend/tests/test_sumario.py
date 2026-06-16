@@ -8,7 +8,6 @@ from __future__ import annotations
 
 from datetime import datetime, timezone, timedelta
 
-import pytest
 
 from engine.metrics import (
     compute_net_return,
