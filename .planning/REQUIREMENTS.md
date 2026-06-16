@@ -54,11 +54,11 @@
 
 ### Robot Report — Sumário (SUM)
 
-- [ ] **SUM-01**: Report header with: robot name, strategy, asset, current contract, simulator badge, "Último salvar" timestamp
-- [ ] **SUM-02**: Metric cards: Net Return, Equity evolution chart (line with tooltip), Asset quote (real-time price + % change), Patrimônio, Current position, Max drawdown, Number of trades, Profitable trades %, Profit factor, Daily balance
-- [ ] **SUM-03**: "RELATÓRIO COMPLETO" expandable accordion with 8 detailed metric cards (Conta, Retorno, Risco, Drawdown, Resumo dos trades, Trades com lucro, Trades com prejuízo, Trades comprados, Trades vendidos)
-- [ ] **SUM-04**: Order list with: date/time, type, direction, quantity, price, status, result; export to CSV
-- [ ] **SUM-05**: Order event modal (ⓘ): detailed event log for each order (#ID, timestamps, prices, fills)
+- [x] **SUM-01**: Report header with: robot name, strategy, asset, current contract, simulator badge, "Último salvar" timestamp
+- [x] **SUM-02**: Metric cards: Net Return, Equity evolution chart (line with tooltip), Asset quote (real-time price + % change), Patrimônio, Current position, Max drawdown, Number of trades, Profitable trades %, Profit factor, Daily balance
+- [x] **SUM-03**: "RELATÓRIO COMPLETO" expandable accordion with 8 detailed metric cards (Conta, Retorno, Risco, Drawdown, Resumo dos trades, Trades com lucro, Trades com prejuízo, Trades comprados, Trades vendidos)
+- [x] **SUM-04**: Order list with: date/time, type, direction, quantity, price, status, result; export to CSV
+- [x] **SUM-05**: Order event modal (ⓘ): detailed event log for each order (#ID, timestamps, prices, fills)
 
 ### Backtests — Individual (BCK)
 
