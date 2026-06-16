@@ -54,3 +54,38 @@
 - Reconnection timing/behaviour under a forced disconnect.
 
 > These are confirmation-only; the method surface above is sufficient to build 01-10. Re-run `python -m backend.broker.poc_metaapi` after topping up the MetaApi account (and set POC_SYMBOL/POC_VOLUME) to capture the live payloads.
+
+---
+
+## LIVE RUN CONFIRMED (2026-06-16 18:06, MetaQuotes-Demo, deployed)
+
+Account deployed + connected + synchronized; 20 EURUSD ticks received; teardown auto-undeployed (billing stopped). Run time 116s.
+
+### Tick payload — `on_symbol_price_updated(instance_index, price)` → `MetatraderSymbolPrice`
+```json
+{"symbol":"EURUSD","bid":1.16098,"ask":1.16116,
+ "time":"2026-06-16 21:06:43+00:00","brokerTime":"2026-06-17 00:06:43.000",
+ "accountCurrencyExchangeRate":1,"profitTickValue":1,"lossTickValue":1,
+ "timestamps":{"eventGenerated":"...","serverProcessingStarted":"...","serverProcessingFinished":"..."},
+ "equity":10000}
+```
+→ Fill simulator uses `bid`/`ask`; timestamp = `time` (tz-aware UTC) / `brokerTime`; `timestamps.*` for latency.
+
+### Account info — `connection.terminal_state.account_information`
+```json
+{"platform":"mt5","type":"ACCOUNT_TRADE_MODE_DEMO","broker":"MetaQuotes Ltd.","currency":"USD",
+ "balance":10000,"equity":10000.0,"margin":0,"freeMargin":10000,"leverage":100,"tradeAllowed":true,
+ "marginMode":"ACCOUNT_MARGIN_MODE_RETAIL_HEDGING","login":108457238,"accountCurrencyExchangeRate":1}
+```
+`terminal_state.connected` = True; `.positions` / `.orders` = [] (work).
+
+### Reconnection (RISK-02)
+`on_connected(instance_index, replicas)`, `on_disconnected(instance_index)`, `on_synchronization_started(instance_index, …)` all fire. **Listener MUST subclass `SynchronizationListener`** — a standalone listener raises AttributeError on every un-overridden callback (on_symbol_specification_updated, on_health_status, on_broker_connection_status_changed) — 9944 errors drowned sync in the first attempt.
+
+### Order placement — IMPORTANT constraint
+`connection.create_market_buy_order(symbol, volume, sl, tp, options)` raised `ValidationException` with `options={"comment":…, "clientId":"poc-vetor-01-09-001"}`.
+Root cause (SDK models.py): **comment + clientId combined length ≤ 30 chars** (≤31 if only one), restricted charset.
+→ **Plan 01-10 idempotency:** store the full `sha256(user+robot+signal_ts)` `client_order_id` in the DB (UNIQUE), but send a SHORT (≤30 char, alphanumeric) derived id as the MetaApi `clientId`. Do NOT send the raw 64-char hash. Re-confirm the exact order response shape (`MetatraderTradeResponse`) once a valid clientId is used.
+
+### Async model
+Native asyncio (httpx/anyio); all SDK calls are `async def` → fits FastAPI `asyncio.create_task` per robot (D-17). Deploy/connect ≈ 3-5 s when already deployed; first deploy can take minutes.
