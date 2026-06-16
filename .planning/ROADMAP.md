@@ -65,6 +65,6 @@ Plans:
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. MVP — Núcleo de Trading | 3/13 | In Progress|  |
+| 1. MVP — Núcleo de Trading | 4/13 | In Progress|  |
 | 2. Completude do Produto Core | 0/TBD | Not started | - |
 | 3. Ecossistema e Marketplace | 0/TBD | Not started | - |

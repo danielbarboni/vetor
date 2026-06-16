@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: "Phase 01, Plan 02 — schema + seed AUTHORED; Task 3 (apply+smoke-test) BLOCKED pending Supabase project"
-last_updated: "2026-06-16T16:00:00.000Z"
-last_activity: 2026-06-16 -- Plan 01-02 Tasks 1+2 complete (schema/RLS/Realtime/B3 seed); Task 3 deferred (no Supabase project yet)
+stopped_at: "Phase 01, Plan 05 — Robot CRUD + lifecycle API complete"
+last_updated: "2026-06-16T17:00:00.000Z"
+last_activity: 2026-06-16 -- Plan 01-05 complete: robots router (8 endpoints) + robot_repo + models; pytest green; ruff clean
 progress:
   total_phases: 3
   completed_phases: 0
   total_plans: 13
-  completed_plans: 0
-  percent: 0
+  completed_plans: 4
+  percent: 31
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-06-15)
 ## Current Position
 
 Phase: 01 (mvp-nucleo-de-trading) — EXECUTING
-Plan: 4 of 13
+Plan: 5 of 13 (complete)
 Status: Executing Phase 01
-Last activity: 2026-06-16 -- Plan 01-02 Tasks 1+2 authored (schema/RLS/Realtime/B3 seed); Task 3 BLOCKED on Supabase apply
+Last activity: 2026-06-16 -- Plan 01-05 complete: Robot CRUD + lifecycle API
 
-Progress: [██░░░░░░░░] 23%
+Progress: [███░░░░░░░] 31%
 
 ## Performance Metrics
 
@@ -44,7 +44,7 @@ Progress: [██░░░░░░░░] 23%
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01 — mvp-nucleo-de-trading | 3/13 | ~95 min | ~32 min |
+| 01 — mvp-nucleo-de-trading | 4/13 | ~135 min | ~34 min |
 
 ## Accumulated Context
 
@@ -77,6 +77,12 @@ Key decisions from Plan 01-03:
 - ruff installed separately in CI (not in requirements.txt) — matches plan spec
 - asyncio_default_fixture_loop_scope=function in pytest.ini — suppresses pytest-asyncio 0.25.3 deprecation warning
 
+Key decisions from Plan 01-05:
+- RobotStatus enum extended with 'rascunho' (DB default state, was missing from plan 03 model)
+- Unique-violation detection via exception string inspection ('23505'/'duplicate'/'unique') — Supabase Python SDK raises Exception not a typed error on constraint violation
+- model_post_init used for cross-field D-08 validation (simulation_capital iff mode=simulado)
+- 5 async endpoint tests skip without SUPABASE_JWT_SECRET (correct per environment_constraints)
+
 ### Pending Todos
 
 - Plan 01-02 Task 3: user must create Supabase project, apply 3 migrations, load B3 seed, run RLS+Realtime smoke test, then signal "approved" to unblock Wave 2+.
@@ -89,5 +95,5 @@ Key decisions from Plan 01-03:
 ## Session Continuity
 
 Last session: 2026-06-16
-Stopped at: Plan 01-02 Tasks 1+2 authored — awaiting Supabase project creation and Task 3 smoke test
-Resume file: .planning/phases/01-mvp-nucleo-de-trading/01-02-PLAN.md (Task 3 checkpoint)
+Stopped at: Plan 01-05 complete — Robot CRUD + lifecycle API (8 endpoints, pytest green, ruff clean)
+Resume file: .planning/phases/01-mvp-nucleo-de-trading/01-06-PLAN.md
