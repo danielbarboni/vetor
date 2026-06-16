@@ -190,40 +190,60 @@ def test_credit_decrement_rejects_when_no_credits_row():
 
 # ─── Pitfall 4 lookahead guard ────────────────────────────────────────────
 
+def _make_bars_list(rows: List[Dict[str, Any]]) -> "BarsList":
+    """
+    Lightweight list-of-dicts bar sequence that the BacktestRunner accepts
+    without requiring pandas (avoids ModuleNotFoundError in test env).
+    Implements __len__ and __getitem__ to satisfy the runner's iteration protocol.
+    """
+    class BarsList:
+        def __init__(self, data):
+            self._data = data
+
+        def __len__(self):
+            return len(self._data)
+
+        def __getitem__(self, idx):
+            if isinstance(idx, slice):
+                return BarsList(self._data[idx])
+            row = self._data[idx]
+            # Return a dict-like object with item and attribute access
+            return _DictRow(row)
+
+        def iloc(self, idx):
+            return self[idx]
+
+    class _DictRow(dict):
+        def __getattr__(self, name):
+            try:
+                return self[name]
+            except KeyError:
+                raise AttributeError(name)
+
+    return BarsList(rows)
+
+
 def test_no_lookahead_signal_at_bar_n_uses_only_bars_up_to_n():
     """
-    Pitfall 4 guard: the runner feeds the strategy exactly df.iloc[:i+1] at bar i.
+    Pitfall 4 guard: the runner feeds the strategy exactly one bar at a time.
 
-    We verify that a signal computed at bar N is NEVER based on bar N+1 data
-    by confirming that when bar N+1 has a price that would change the signal,
-    the signal at bar N is unaffected.
-
-    We do this by replaying bars one at a time and asserting the
-    BacktestRunner's event loop structure calls on_tick exactly once per bar
-    with only the data up to that bar.
+    We verify that on_tick is called exactly once per bar and evaluate()
+    is called after each on_tick — never before — by counting cumulative ticks.
     """
     from engine.backtest_runner import BacktestRunner
 
-    import pandas as pd
-
-    # Build a simple price series as DataFrame
     now = datetime.now(timezone.utc)
-    bars = pd.DataFrame({
-        "open":  [100.0, 101.0, 102.0, 50.0, 200.0],
-        "high":  [101.0, 102.0, 103.0, 51.0, 201.0],
-        "low":   [99.0,  100.0, 101.0, 49.0, 199.0],
-        "close": [100.5, 101.5, 102.5, 50.5, 200.5],
-        "volume": [1000.0, 1100.0, 1200.0, 800.0, 1500.0],
-        "time":  [
-            (now + timedelta(minutes=i)).isoformat()
-            for i in range(5)
-        ],
-    })
+    rows = [
+        {"open": 100.0, "high": 101.0, "low": 99.0,  "close": 100.5, "volume": 1000.0,
+         "time": (now + timedelta(minutes=i)).isoformat()}
+        for i in range(5)
+    ]
+    bars = _make_bars_list(rows)
 
     tick_count = []
 
     class SpyStrategy:
-        """Strategy spy that records how many ticks it has seen per evaluate() call."""
+        """Strategy spy: records cumulative ticks at each evaluate() call."""
         def __init__(self):
             self._ticks: int = 0
 
@@ -240,9 +260,9 @@ def test_no_lookahead_signal_at_bar_n_uses_only_bars_up_to_n():
     runner = BacktestRunner(strategy=SpyStrategy(), fill_policy="moderado")
     runner.replay(bars, capital=10_000.0)
 
-    # At bar 0: 1 tick seen; bar 1: 2 ticks; bar 2: 3 ticks, etc.
-    assert tick_count == list(range(1, len(bars) + 1)), (
-        f"Lookahead detected! tick_count={tick_count} expected={list(range(1, len(bars)+1))}"
+    # At bar i, the spy must have seen exactly i+1 ticks when evaluate() is called
+    assert tick_count == list(range(1, len(rows) + 1)), (
+        f"Lookahead detected! tick_count={tick_count} expected={list(range(1, len(rows)+1))}"
     )
 
 
@@ -250,29 +270,24 @@ def test_entry_price_is_next_bar_open():
     """
     Pitfall 4: Entry fills at next bar's OPEN, never at signal bar's price.
 
-    Send a buy signal at bar 1; the fill price must equal bar 2's open.
+    Signal at bar 1 (close=101.5); fill must be at bar 2's open (105.0).
     """
     from engine.backtest_runner import BacktestRunner
 
-    import pandas as pd
-
     now = datetime.now(timezone.utc)
-    # bar 0: warm-up; bar 1: signal; bar 2: entry fill
-    bars = pd.DataFrame({
-        "open":  [100.0, 101.0, 105.0],
-        "high":  [101.0, 102.0, 106.0],
-        "low":   [99.0,  100.0, 104.0],
-        "close": [100.5, 101.5, 105.5],
-        "volume": [1000.0, 1100.0, 1200.0],
-        "time":  [
-            (now + timedelta(minutes=i)).isoformat()
-            for i in range(3)
-        ],
-    })
-
-    signal_bar = [0]
+    rows = [
+        {"open": 100.0, "high": 101.0, "low": 99.0,  "close": 100.5, "volume": 1000.0,
+         "time": (now + timedelta(minutes=0)).isoformat()},
+        {"open": 101.0, "high": 102.0, "low": 100.0, "close": 101.5, "volume": 1100.0,
+         "time": (now + timedelta(minutes=1)).isoformat()},
+        # Bar 2: open=105.0 — this is where the entry fill should occur
+        {"open": 105.0, "high": 106.0, "low": 104.0, "close": 105.5, "volume": 1200.0,
+         "time": (now + timedelta(minutes=2)).isoformat()},
+    ]
+    bars = _make_bars_list(rows)
 
     class BuyOnBar1Strategy:
+        """Emits buy on the 2nd bar (bar index 1)."""
         def __init__(self):
             self._bar = 0
 
@@ -280,8 +295,8 @@ def test_entry_price_is_next_bar_open():
             self._bar += 1
 
         def evaluate(self):
-            if self._bar == 2:  # bar index 1 (2nd tick)
-                signal_bar[0] = self._bar
+            # After 2nd on_tick call (bar index 1), emit buy
+            if self._bar == 2:
                 return "buy"
             return None
 
@@ -291,14 +306,13 @@ def test_entry_price_is_next_bar_open():
     runner = BacktestRunner(strategy=BuyOnBar1Strategy(), fill_policy="moderado")
     orders = runner.replay(bars, capital=10_000.0)
 
-    # Should have at least one order (the entry)
     entry_orders = [o for o in orders if o.get("order_class") == "entry"]
     assert len(entry_orders) >= 1, "Expected entry order from buy signal"
 
-    # The entry fill price must be bar 2's open (105.0) — NOT bar 1's close (101.5)
     entry = entry_orders[0]
     fill_price = entry.get("filled_price") or entry.get("price")
     assert fill_price is not None, "Entry order has no fill price"
+    # Must fill at bar 2's open (105.0), NOT bar 1's close (101.5)
     assert abs(fill_price - 105.0) < 0.01, (
         f"Entry should fill at next bar open (105.0), got {fill_price} — lookahead detected!"
     )
