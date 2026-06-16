@@ -4,6 +4,9 @@ import AppShell from './components/shell/AppShell'
 import RequireAuth from './components/auth/RequireAuth'
 import { useAuthStore } from './stores/auth'
 
+// Robot listing
+import RobotList from './pages/robots/RobotList'
+
 // Auth screens
 import Login from './pages/auth/Login'
 import Register from './pages/auth/Register'
@@ -12,12 +15,15 @@ import AuthCallback from './pages/auth/AuthCallback'
 import AccountSelector from './pages/auth/AccountSelector'
 
 // Route stub pages — each will be implemented in later plans
-function RobosStub() {
+function RobosWizardStub() {
   return (
     <div style={{ padding: '22px 28px' }}>
       <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, color: 'var(--text)' }}>
-        Meus Robôs
+        Criar Robô
       </h1>
+      <p style={{ color: 'var(--muted)', marginTop: '8px' }}>
+        Wizard — implementado no plano 01-07
+      </p>
     </div>
   )
 }
@@ -82,7 +88,8 @@ export default function App() {
       {/* Protected app shell wraps all authenticated routes */}
       <Route element={<RequireAuth />}>
         <Route element={<AppShell />}>
-          <Route path="/robos" element={<RobosStub />} />
+          <Route path="/robos" element={<RobotList />} />
+          <Route path="/robos/wizard" element={<RobosWizardStub />} />
           <Route path="/robos/:id/parametros" element={<RoboParametrosStub />} />
           <Route path="/robos/:id/sumario" element={<RoboSumarioStub />} />
           <Route path="/backtests" element={<BacktestsStub />} />
