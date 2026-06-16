@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: "Phase 01, Plan 04 — Auth layer complete (store + screens + backend sessions)"
-last_updated: "2026-06-16T18:13:00.000Z"
-last_activity: 2026-06-16 -- Plan 01-04 complete: auth store + 5 screens + RequireAuth + /account/sessions; 48 vitest green; ruff clean
+stopped_at: Plan 01-04 complete — Auth layer (store + RequireAuth + 5 screens + /account/sessions)
+last_updated: "2026-06-16T18:45:33.806Z"
+last_activity: 2026-06-16
 progress:
   total_phases: 3
   completed_phases: 0
   total_plans: 13
-  completed_plans: 5
-  percent: 38
+  completed_plans: 7
+  percent: 0
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-06-15)
 ## Current Position
 
 Phase: 01 (mvp-nucleo-de-trading) — EXECUTING
-Plan: 4 of 13 (complete); Plan 5 of 13 (complete)
-Status: Executing Phase 01
-Last activity: 2026-06-16 -- Plan 01-04 complete: auth store + RequireAuth + 5 auth screens + /account/sessions endpoints
+Plan: 5 of 13 (complete); Plan 5 of 13 (complete)
+Status: Ready to execute
+Last activity: 2026-06-16
 
-Progress: [████░░░░░░] 38%
+Progress: [█████░░░░░] 54%
 
 ## Performance Metrics
 
@@ -45,6 +45,7 @@ Progress: [████░░░░░░] 38%
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
 | 01 — mvp-nucleo-de-trading | 5/13 | ~145 min | ~29 min |
+| Phase 01-mvp-nucleo-de-trading P06 | 25m | 3 tasks | 10 files |
 
 ## Accumulated Context
 
@@ -59,11 +60,13 @@ Key decisions for Phase 1:
 - Phase 1 excludes IBKR/CME — B3 is primary; defer CME to Phase 2
 
 Key decisions from Plan 01-01:
+
 - @vitejs/plugin-react@6.x required for vite 8 compatibility (v4.x peer range is vite ^4–7)
 - palettes.d.ts added to blue-hour-design-system/ for TypeScript module declarations
 - Sora 700 used for logo mark (README.md binding loads only 600/700, not 800)
 
 Key decisions from Plan 01-02:
+
 - WIN%/WDO% expiry = Wednesday nearest 15th of even-month (B3 mini-futures rule)
 - BIT% expiry = 3rd Friday of every month (all 12 months)
 - Rollover = T-5 business days before expiry (Mon-Fri, no holiday correction in seed)
@@ -72,12 +75,14 @@ Key decisions from Plan 01-02:
 - user_credits writes restricted to service role only
 
 Key decisions from Plan 01-03:
+
 - JWT guard fails closed (503) when SUPABASE_JWT_SECRET absent — distinguishes misconfiguration from bad token
 - CORS allowlist driven by settings.cors_origins_list (comma-split) — never wildcard
 - ruff installed separately in CI (not in requirements.txt) — matches plan spec
 - asyncio_default_fixture_loop_scope=function in pytest.ini — suppresses pytest-asyncio 0.25.3 deprecation warning
 
 Key decisions from Plan 01-04:
+
 - vi.hoisted() required for Vitest mock fns — vi.mock() is hoisted before const declarations
 - HTTPBearer returns 401 (not 403) on missing Authorization header — tests assert in (401, 403)
 - AccountSelector auto-skips to /robos for single-profile users (AUT-05 spec)
@@ -85,10 +90,13 @@ Key decisions from Plan 01-04:
 - Auth callback navigates to /auth/select (not /robos) to allow multi-profile future expansion
 
 Key decisions from Plan 01-05:
+
 - RobotStatus enum extended with 'rascunho' (DB default state, was missing from plan 03 model)
 - Unique-violation detection via exception string inspection ('23505'/'duplicate'/'unique') — Supabase Python SDK raises Exception not a typed error on constraint violation
 - model_post_init used for cross-field D-08 validation (simulation_capital iff mode=simulado)
 - 5 async endpoint tests skip without SUPABASE_JWT_SECRET (correct per environment_constraints)
+- [Phase ?]: Pinned per Assumption A1 for prototype fidelity
+- [Phase ?]: All frontend plans use this shared client
 
 ### Pending Todos
 
@@ -101,6 +109,6 @@ Key decisions from Plan 01-05:
 
 ## Session Continuity
 
-Last session: 2026-06-16
+Last session: 2026-06-16T18:45:25.603Z
 Stopped at: Plan 01-04 complete — Auth layer (store + RequireAuth + 5 screens + /account/sessions)
-Resume file: .planning/phases/01-mvp-nucleo-de-trading/01-06-PLAN.md
+Resume file: None

@@ -19,13 +19,13 @@
 
 ### Robot Listing (ROB)
 
-- [ ] **ROB-01**: User sees robots organized in three tabs by state: EXECUTANDO, PARADOS, ARQUIVADOS
-- [ ] **ROB-02**: Each robot displayed as a card showing: #id, asset code, simulator badge (Pessimista/Moderado/Otimista), robot name, strategy type, sparkline equity curve with date axis, position status, Net Return (green/red), Daily Balance
-- [ ] **ROB-03**: Each card has: "MAIS INFO" accordion expander, ⋮ context menu, primary control button (Parar/Iniciar/Restaurar)
-- [ ] **ROB-04**: "MAIS INFO" expands to show: Number of trades, Profitable trades (%), Profit factor, Max drawdown (%)
+- [x] **ROB-01**: User sees robots organized in three tabs by state: EXECUTANDO, PARADOS, ARQUIVADOS
+- [x] **ROB-02**: Each robot displayed as a card showing: #id, asset code, simulator badge (Pessimista/Moderado/Otimista), robot name, strategy type, sparkline equity curve with date axis, position status, Net Return (green/red), Daily Balance
+- [x] **ROB-03**: Each card has: "MAIS INFO" accordion expander, ⋮ context menu, primary control button (Parar/Iniciar/Restaurar)
+- [x] **ROB-04**: "MAIS INFO" expands to show: Number of trades, Profitable trades (%), Profit factor, Max drawdown (%)
 - [ ] **ROB-05**: ⋮ context menu actions per robot state (Ver Sumário, Editar parâmetros, Iniciar, Pausar/Parar, Arquivar, Desarquivar, Excluir, Criar backtest, Duplicar) — available actions vary by state
-- [ ] **ROB-06**: Filters by strategy (multi-select dropdown), by "Robôs Posicionados"; grid/list toggle; search by name
-- [ ] **ROB-07**: "CRIAR ROBÔ" button launches the wizard
+- [x] **ROB-06**: Filters by strategy (multi-select dropdown), by "Robôs Posicionados"; grid/list toggle; search by name
+- [x] **ROB-07**: "CRIAR ROBÔ" button launches the wizard
 
 ### Robot Creation Wizard (WIZ)
 
