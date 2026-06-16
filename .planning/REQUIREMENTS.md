@@ -62,10 +62,10 @@
 
 ### Backtests — Individual (BCK)
 
-- [ ] **BCK-01**: Individual backtest creation modal (from editor ⓑ icon or robot card ⋮ menu): robot name pre-filled, capital, operational costs profile, backtest type (pessimist/moderate/optimist), start/end date with period shortcuts (1M/3M/6M/1Y/2Y)
-- [ ] **BCK-02**: Available backtest credits displayed (read-only counter); each execution consumes 1 credit
-- [ ] **BCK-03**: Backtest list page: shows all backtests with status (Aguardando/Processando/Concluído/Erro), creation date, period, capital, type
-- [ ] **BCK-04**: Completed backtest report: same metric cards as Sumário + equity curve + order list (read-only, historical)
+- [x] **BCK-01**: Individual backtest creation modal (from editor ⓑ icon or robot card ⋮ menu): robot name pre-filled, capital, operational costs profile, backtest type (pessimist/moderate/optimist), start/end date with period shortcuts (1M/3M/6M/1Y/2Y)
+- [x] **BCK-02**: Available backtest credits displayed (read-only counter); each execution consumes 1 credit
+- [x] **BCK-03**: Backtest list page: shows all backtests with status (Aguardando/Processando/Concluído/Erro), creation date, period, capital, type
+- [x] **BCK-04**: Completed backtest report: same metric cards as Sumário + equity curve + order list (read-only, historical)
 
 ### Minha Conta (CTR) — Phase 1 Tabs
 
