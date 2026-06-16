@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Plan 01-04 complete — Auth layer (store + RequireAuth + 5 screens + /account/sessions)
-last_updated: "2026-06-16T18:54:04.375Z"
+stopped_at: Plan 01-08 complete — IT [Tangram 3.0] parameter editor (EDT-01..04)
+last_updated: "2026-06-16T19:10:40Z"
 last_activity: 2026-06-16
 progress:
   total_phases: 3
   completed_phases: 0
   total_plans: 13
-  completed_plans: 8
+  completed_plans: 9
   percent: 0
 ---
 
@@ -26,26 +26,26 @@ See: .planning/PROJECT.md (updated 2026-06-15)
 ## Current Position
 
 Phase: 01 (mvp-nucleo-de-trading) — EXECUTING
-Plan: 6 of 13 (complete); Plan 5 of 13 (complete)
-Status: Ready to execute
+Plan: 08 of 13 (complete)
+Status: Ready to execute next plan (01-09)
 Last activity: 2026-06-16
 
-Progress: [██████░░░░] 62%
+Progress: [███████░░░] 69%
 
 ## Performance Metrics
 
 **Velocity:**
 
-- Total plans completed: 5
-- Average duration: ~25 min
-- Total execution time: ~145 min
+- Total plans completed: 9
+- Average duration: ~35 min
+- Total execution time: ~215 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| 01 — mvp-nucleo-de-trading | 5/13 | ~145 min | ~29 min |
-| Phase 01-mvp-nucleo-de-trading P06 | 25m | 3 tasks | 10 files |
+| 01 — mvp-nucleo-de-trading | 9/13 | ~215 min | ~24 min |
+| Phase 01-mvp-nucleo-de-trading P08 | 70m | 2 tasks | 15 files |
 
 ## Accumulated Context
 
@@ -98,6 +98,15 @@ Key decisions from Plan 01-05:
 - [Phase ?]: Pinned per Assumption A1 for prototype fidelity
 - [Phase ?]: All frontend plans use this shared client
 
+Key decisions from Plan 01-08:
+
+- Pydantic model_validator(mode='after') per subclass — each indicator validates its own required-when-enabled fields; ITParams validates at-least-one-enabled at root level
+- indicatorDefs.ts uses declarative FieldDef shape with revealedBy for conditional renders — avoids per-indicator JSX duplication
+- IndicadorRow renders common fields (habilitar_inversao, modo_operacao, forma_uso) inline, then iterates specificFields — matches PRD §12.4 structure exactly
+- PlaceholderSection used for sections 05-11 — correct titles/subtitles; full field content deferred to plan 01-10
+- Backtest shortcut navigates to /backtests?robot=:id — full BacktestModal wired in plan 01-12
+- params_saved_at set in robot_repo.update_robot when params key is present — no separate endpoint needed
+
 ### Pending Todos
 
 - Plan 01-02 Task 3: user must create Supabase project, apply 3 migrations, load B3 seed, run RLS+Realtime smoke test, then signal "approved" to unblock Wave 2+.
@@ -109,6 +118,6 @@ Key decisions from Plan 01-05:
 
 ## Session Continuity
 
-Last session: 2026-06-16T18:54:04.353Z
-Stopped at: Plan 01-04 complete — Auth layer (store + RequireAuth + 5 screens + /account/sessions)
+Last session: 2026-06-16T19:10:40Z
+Stopped at: Plan 01-08 complete — IT [Tangram 3.0] parameter editor (EDT-01..04)
 Resume file: None
